@@ -146,12 +146,11 @@ class WindowsAppSource implements AppSource {
   @override
   Future<List<AppCount>> read({int days = 31}) async {
     final script = windowsAppScript.replaceFirst('__DAYS__', '${days.clamp(1, 60)}');
-    final units = <int>[];
-    for (final c in script.codeUnits) {
-      units
-        ..add(c & 0xff)
-        ..add(c >> 8);
-    }
+    // Run from a file: an -EncodedCommand's errors come back as CLIXML.
+    final dir = await Directory.systemTemp.createTemp('nireekshana-apps');
+    final file = File('${dir.path}${Platform.pathSeparator}apps.ps1');
+    // A byte-order mark, so Windows PowerShell reads the file as UTF-8.
+    await file.writeAsString('\uFEFF$script');
     final ProcessResult r;
     try {
       r = await Process.run('powershell.exe', [
@@ -159,22 +158,25 @@ class WindowsAppSource implements AppSource {
         '-NonInteractive',
         '-ExecutionPolicy',
         'Bypass',
-        '-EncodedCommand',
-        base64.encode(units),
+        '-File',
+        file.path,
       ]);
     } on ProcessException {
       throw AppSourceException('Windows PowerShell is not available.');
+    } finally {
+      await dir.delete(recursive: true);
     }
     if (r.exitCode != 0) {
-      final why = powershellError('${r.stderr}');
+      final err = powershellError('${r.stderr}');
+      final why = err.isNotEmpty ? err : 'exit code ${r.exitCode} ${'${r.stdout}'.trim()}';
       throw AppSourceException('Windows did not give the usage per app: $why');
     }
     return parseWindowsApps('${r.stdout}');
   }
 }
 
-/// PowerShell's stderr as one readable line: run with -EncodedCommand it
-/// wraps errors in CLIXML, whose error strings are pulled out here.
+/// PowerShell's stderr as one readable line. Some hosts wrap errors in
+/// CLIXML; its error strings are pulled out here.
 String powershellError(String stderr) {
   final text = stderr.trim();
   if (!text.startsWith('#< CLIXML')) return text.split('\n').first;
@@ -187,7 +189,7 @@ String powershellError(String stderr) {
           .replaceAll('&gt;', '>')
           .replaceAll('&amp;', '&'),
   ];
-  return parts.isEmpty ? 'PowerShell failed' : parts.join().replaceAll(RegExp(r'\s+'), ' ').trim();
+  return parts.isEmpty ? '' : parts.join().replaceAll(RegExp(r'\s+'), ' ').trim();
 }
 
 /// The PowerShell script's JSON as rows.
