@@ -168,6 +168,10 @@ class WindowsAppSource implements AppSource {
     }
     if (r.exitCode != 0) {
       final err = powershellError('${r.stderr}');
+      // Windows Server does not keep data usage per app.
+      if (err.contains('not implemented')) {
+        throw AppSourceException(windowsAppsMissing);
+      }
       final why = err.isNotEmpty ? err : 'exit code ${r.exitCode} ${'${r.stdout}'.trim()}';
       throw AppSourceException('Windows did not give the usage per app: $why');
     }
@@ -191,6 +195,10 @@ String powershellError(String stderr) {
   ];
   return parts.isEmpty ? '' : parts.join().replaceAll(RegExp(r'\s+'), ' ').trim();
 }
+
+const windowsAppsMissing =
+    'This edition of Windows does not keep data usage per app (Windows 10 and 11 do; Windows Server '
+    'does not).';
 
 /// The PowerShell script's JSON as rows.
 List<AppCount> parseWindowsApps(String json) {

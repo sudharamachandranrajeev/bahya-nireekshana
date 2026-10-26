@@ -47,7 +47,17 @@ void main() {
   test('the data usage per app comes back as rows', () async {
     // A fresh runner may have little attributed usage; the call itself and
     // the JSON it prints are what is checked.
-    final rows = await WindowsAppSource().read(days: 2);
+    final List<AppCount> rows;
+    try {
+      rows = await WindowsAppSource().read(days: 2);
+    } on AppSourceException catch (e) {
+      // CI runs Windows Server, which has no per-app data usage.
+      if (e.message == windowsAppsMissing) {
+        markTestSkipped(e.message);
+        return;
+      }
+      rethrow;
+    }
     for (final r in rows) {
       expect(r.day, matches(RegExp(r'^\d{4}-\d{2}-\d{2}$')));
       expect(r.app, isNotEmpty);
