@@ -204,6 +204,8 @@ String _windowsName(String name, String app) {
 /// days, every connection profile, one query per profile and day.
 const windowsAppScript = r'''
 $ErrorActionPreference = 'Stop'
+# Plain text on stderr: PowerShell otherwise wraps errors in CLIXML.
+trap { [Console]::Error.WriteLine($_.Exception.Message); exit 1 }
 Add-Type -AssemblyName System.Runtime.WindowsRuntime
 $asTask = [System.WindowsRuntimeSystemExtensions].GetMethods() | Where-Object {
   $_.Name -eq 'AsTask' -and $_.GetParameters().Count -eq 1 -and
