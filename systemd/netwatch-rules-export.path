@@ -1,0 +1,13 @@
+[Unit]
+Description=Refresh the netwatch rules export when OpenSnitch rules or lists change
+
+[Path]
+PathChanged=/etc/opensnitchd/rules
+PathChanged=/etc/opensnitchd/netwatch/block-domains
+PathChanged=/etc/opensnitchd/netwatch/block-nets
+PathChanged=/etc/opensnitchd/netwatch/allow-domains
+PathChanged=/etc/opensnitchd/netwatch/allow-nets
+Unit=netwatch-rules-export.service
+
+[Install]
+WantedBy=paths.target

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "id": "rajeevrama.netwatch",
+  "name": "Network usage",
+  "version": "1.0.0",
+  "author": "rajeevrama",
+  "description": "Live upload/download speed in the bar, with a panel of daily, weekly and monthly usage per connection (vnstat), live per-app usage (nethogs), and OpenSnitch firewall status, blocklists and allowlist",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Network usage",
+    "description": "Live transfer speed with usage history and firewall status",
+    "category": "System",
+    "aliases": [
+      "netwatch",
+      "bandwidth",
+      "traffic",
+      "data usage"
+    ],
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "label": "active",
+      "interfaces": "",
+      "firewallBadge": true
+    },
+    "schema": [
+      {
+        "key": "label",
+        "type": "enum",
+        "label": "Bar label",
+        "options": [
+          "active",
+          "always",
+          "none"
+        ],
+        "defaultValue": "active",
+        "description": "Show download/upload speed only while something is transferring, all the time, or never. Right-click the widget to cycle."
+      },
+      {
+        "key": "interfaces",
+        "type": "string",
+        "label": "Interfaces counted",
+        "defaultValue": "",
+        "description": "Comma-separated interface names to total, e.g. wlan0,enp3s0. Empty counts Wi-Fi, Ethernet and mobile links; VPN tunnels are left out so traffic isn't counted twice."
+      },
+      {
+        "key": "firewallBadge",
+        "type": "boolean",
+        "label": "Warn when the firewall isn't asking",
+        "defaultValue": true,
+        "description": "Mark the widget when OpenSnitch is stopped or its prompt window isn't running."
+      }
+    ]
+  }
+}
