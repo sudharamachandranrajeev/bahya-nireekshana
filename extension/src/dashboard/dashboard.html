@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nireekshana</title>
+  <link rel="icon" href="../icons/icon-32.png">
+  <link rel="stylesheet" href="../ui/base.css">
+  <link rel="stylesheet" href="dashboard.css">
+  <script type="module" src="dashboard.js"></script>
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <img src="../icons/icon-48.png" width="32" height="32" alt="">
+      <div>
+        <h1>Bahya Nireekshana</h1>
+        <p class="muted small">Watching what goes out. All data stays on this device.</p>
+      </div>
+    </div>
+    <nav class="tabs" aria-label="Sections">
+      <a href="#usage" data-view="usage">Usage</a>
+      <a href="#blocklist" data-view="blocklist">Blocklist</a>
+      <a href="#alerts" data-view="alerts">Alerts</a>
+      <a href="#appearance" data-view="appearance">Appearance</a>
+      <a href="#data" data-view="data">Data</a>
+    </nav>
+  </header>
+
+  <div class="wrap">
+    <div id="access"></div>
+    <p id="measure-note" class="notice small"></p>
+
+    <section id="view-usage" class="view">
+      <div class="toolbar">
+        <div id="periods" class="segmented" role="group" aria-label="Period"></div>
+        <input id="search" type="search" placeholder="Search sites and hosts" aria-label="Search sites and hosts">
+      </div>
+      <div id="totals" class="totals"></div>
+      <section class="card">
+        <div class="card-head">
+          <h2>Per day</h2>
+          <div class="legend small"><span><span class="dot down"></span> Download</span><span><span class="dot up"></span> Upload</span><span id="chart-max" class="muted"></span></div>
+        </div>
+        <div id="chart"></div>
+      </section>
+      <section class="card">
+        <div class="card-head"><h2>Sites</h2><span id="site-count" class="muted small"></span></div>
+        <div class="table-wrap"><table id="sites" class="table"></table></div>
+      </section>
+    </section>
+
+    <section id="view-blocklist" class="view" hidden>
+      <section class="card">
+        <h2>Blocked domains</h2>
+        <p class="muted">Requests to these domains and their subdomains are blocked in every tab. Opening a blocked site directly in a tab still works.</p>
+        <form id="block-form" class="row-form">
+          <input id="block-input" type="text" placeholder="ads.example.com" aria-label="Domain to block" autocomplete="off" spellcheck="false">
+          <button class="primary" type="submit">Block</button>
+        </form>
+        <p id="block-error" class="error small" role="alert"></p>
+        <p id="block-count" class="muted small"></p>
+        <ul id="block-list" class="plain-list"></ul>
+      </section>
+    </section>
+
+    <section id="view-alerts" class="view" hidden>
+      <section class="card">
+        <h2>Daily budget for the browser</h2>
+        <p class="muted">Get one notification on the day the browser uses more than this. Leave empty to turn it off.</p>
+        <form id="browser-budget-form" class="row-form">
+          <input id="browser-budget" type="text" inputmode="decimal" placeholder="MB per day" aria-label="Browser budget in MB per day">
+          <span class="muted">MB</span>
+          <button class="primary" type="submit">Save</button>
+        </form>
+        <p id="browser-budget-msg" class="small" role="status"></p>
+      </section>
+      <section class="card">
+        <h2>Daily budgets per site</h2>
+        <p class="muted">One notification per site on the day it goes over its budget.</p>
+        <form id="site-budget-form" class="row-form">
+          <input id="site-budget-site" type="text" placeholder="example.com" aria-label="Site" autocomplete="off" spellcheck="false">
+          <input id="site-budget-mb" type="text" inputmode="decimal" placeholder="MB" aria-label="Budget in MB per day" class="short">
+          <button class="primary" type="submit">Add</button>
+        </form>
+        <p id="site-budget-error" class="error small" role="alert"></p>
+        <ul id="site-budget-list" class="plain-list"></ul>
+      </section>
+    </section>
+
+    <section id="view-appearance" class="view" hidden>
+      <section class="card">
+        <h2>Mode</h2>
+        <div id="modes" class="segmented" role="group" aria-label="Colour mode"></div>
+      </section>
+      <section class="card">
+        <div class="card-head"><h2>Theme</h2><button id="export-theme" type="button">Export current theme</button></div>
+        <p class="muted">Themes use the same format as the Nireekshana app.</p>
+        <div id="theme-grid" class="theme-grid"></div>
+      </section>
+      <section class="card">
+        <h2>Import a theme</h2>
+        <p class="muted">Paste a theme exported from the app, or load the file.</p>
+        <textarea id="theme-text" rows="7" spellcheck="false" placeholder='{"format":"nireekshana-theme","version":1, ...}' aria-label="Theme JSON"></textarea>
+        <div class="row-form">
+          <button id="theme-import" class="primary" type="button">Import</button>
+          <label class="file-button"><input id="theme-file" type="file" accept=".json,application/json"> Load file</label>
+        </div>
+        <ul id="theme-errors" class="error small" role="alert"></ul>
+      </section>
+    </section>
+
+    <section id="view-data" class="view" hidden>
+      <section class="card">
+        <h2>Stored data</h2>
+        <p id="data-summary" class="muted"></p>
+        <div class="row-form">
+          <button id="export-json" type="button">Export JSON</button>
+          <button id="export-csv" type="button">Export CSV</button>
+        </div>
+      </section>
+      <section class="card">
+        <h2>Clear usage data</h2>
+        <p class="muted">Deletes all usage history. Your blocklist, budgets and themes stay.</p>
+        <div id="clear-area" class="row-form"></div>
+      </section>
+    </section>
+  </div>
+
+  <div id="drawer-backdrop" class="backdrop" hidden></div>
+  <aside id="drawer" class="drawer" hidden aria-labelledby="drawer-title" role="dialog" aria-modal="true"></aside>
+</body>
+</html>

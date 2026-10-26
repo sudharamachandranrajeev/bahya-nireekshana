@@ -1,0 +1,33 @@
+body { width: 360px; padding: 12px; }
+
+.top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.top h1 { font-size: 16px; flex: 1; }
+
+main { display: grid; gap: 10px; }
+
+.today { display: grid; gap: 4px; }
+.today .big { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
+.today .split { display: flex; gap: 14px; font-size: 12px; }
+
+.label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 6px; }
+
+.site .name { font-weight: 650; font-size: 15px; word-break: break-all; }
+.site .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; }
+.site .stats div { background: var(--bg); border-radius: var(--radius-sm); padding: 6px 8px; }
+.site .stats b { display: block; font-size: 14px; }
+.site .stats span { font-size: 11px; color: var(--muted); }
+
+.tp-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; }
+.tp-list li { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.tp-list .host { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tp-list .size { color: var(--muted); }
+.tp-list .blocked { color: var(--muted); font-size: 11px; }
+
+.top-sites { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+.top-sites li { display: grid; gap: 3px; }
+.top-sites .row { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; }
+.top-sites .row span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.spark-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+.foot { font-size: 11px; }

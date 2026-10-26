@@ -1,0 +1,102 @@
+{
+  "format": "nireekshana-themes",
+  "version": 1,
+  "themes": [
+    {
+      "id": "radar",
+      "name": "Radar",
+      "seed": "#0FA3B1",
+      "accent": "#FFB020",
+      "download": "#1FB5E0",
+      "upload": "#FF7A45",
+      "light": { "background": "#F3F7F8" },
+      "dark": { "background": "#0B1214" },
+      "radius": 18,
+      "font": "sans"
+    },
+    {
+      "id": "aurora",
+      "name": "Aurora",
+      "seed": "#7C5CFF",
+      "accent": "#18D6A3",
+      "download": "#5B8CFF",
+      "upload": "#FF6FB5",
+      "light": { "background": "#F6F4FF" },
+      "dark": { "background": "#0F0C1D" },
+      "radius": 22,
+      "font": "sans"
+    },
+    {
+      "id": "saffron",
+      "name": "Saffron",
+      "seed": "#D9822B",
+      "accent": "#2B7A9E",
+      "download": "#2B8FD9",
+      "upload": "#E8572A",
+      "light": { "background": "#FBF6EF" },
+      "dark": { "background": "#17120C" },
+      "radius": 14,
+      "font": "sans"
+    },
+    {
+      "id": "terminal",
+      "name": "Terminal",
+      "seed": "#22C55E",
+      "accent": "#EAB308",
+      "download": "#22C55E",
+      "upload": "#F59E0B",
+      "light": { "background": "#F2F5F1" },
+      "dark": { "background": "#050805" },
+      "radius": 6,
+      "font": "mono"
+    },
+    {
+      "id": "ocean",
+      "name": "Ocean",
+      "seed": "#1D6FD8",
+      "accent": "#F25F5C",
+      "download": "#2E9BFF",
+      "upload": "#F25F5C",
+      "light": { "background": "#F2F6FC" },
+      "dark": { "background": "#0A1220" },
+      "radius": 16,
+      "font": "sans"
+    },
+    {
+      "id": "rose",
+      "name": "Rose",
+      "seed": "#D14D7E",
+      "accent": "#2FB3A6",
+      "download": "#3E9BD6",
+      "upload": "#E2557F",
+      "light": { "background": "#FCF4F7" },
+      "dark": { "background": "#1A0E13" },
+      "radius": 20,
+      "font": "sans"
+    },
+    {
+      "id": "solarized",
+      "name": "Solarized",
+      "seed": "#268BD2",
+      "accent": "#B58900",
+      "download": "#2AA198",
+      "upload": "#CB4B16",
+      "light": { "background": "#FDF6E3" },
+      "dark": { "background": "#002B36" },
+      "radius": 12,
+      "font": "sans"
+    },
+    {
+      "id": "mono",
+      "name": "Mono",
+      "seed": "#64748B",
+      "accent": "#0EA5E9",
+      "download": "#475569",
+      "upload": "#94A3B8",
+      "light": { "background": "#F8FAFC" },
+      "dark": { "background": "#0B0D10" },
+      "radius": 10,
+      "font": "sans"
+    }
+  ]
+}

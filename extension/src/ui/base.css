@@ -1,0 +1,136 @@
+/* Shared styles. Colours come from theme variables set by theme-apply.js.
+   The fallbacks below are neutral greys used only until a theme loads. */
+
+:root {
+  --bg: #f6f7f8;
+  --surface: #eceef0;
+  --surface-2: #e2e5e8;
+  --border: #d5d9dd;
+  --text: #15181b;
+  --muted: #6b7178;
+  --primary: #3b6e8f;
+  --on-primary: #ffffff;
+  --primary-soft: #dde7ee;
+  --accent: #8a6d1f;
+  --download: #3b7fb0;
+  --upload: #b0603b;
+  --danger: #c62828;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111315;
+    --surface: #1a1d20;
+    --surface-2: #22262a;
+    --border: #2e3338;
+    --text: #eceff1;
+    --muted: #949ba2;
+    --primary-soft: #1e2a33;
+  }
+}
+
+html:not(.themed) body { visibility: hidden; }
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.num, .mono { font-variant-numeric: tabular-nums; }
+html[data-font="mono"] .num { font-family: var(--font-mono); }
+
+h1, h2, h3 { margin: 0; font-weight: 650; letter-spacing: -0.01em; }
+
+a { color: var(--primary); }
+
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+}
+button:hover { background: var(--surface-2); }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+button.primary { background: var(--primary); color: var(--on-primary); border-color: transparent; }
+button.primary:hover { filter: brightness(1.08); }
+button.danger { color: var(--danger); }
+button.danger.solid { background: var(--danger); color: #fff; border-color: transparent; }
+button.small { padding: 2px 8px; font-size: 12px; }
+button:disabled { opacity: 0.55; cursor: default; }
+
+input[type="text"], input[type="search"], input[type="number"], select, textarea {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+.error { color: var(--danger); }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; vertical-align: middle; }
+.dot.down { background: var(--download); }
+.dot.up { background: var(--upload); }
+.down-text { color: var(--download); }
+.up-text { color: var(--upload); }
+
+.bar-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--surface-2);
+  overflow: hidden;
+  display: flex;
+}
+.bar-track > .down { background: var(--download); }
+.bar-track > .up { background: var(--upload); }
+
+.notice {
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+}
+
+svg.bar-chart { width: 100%; height: 180px; display: block; }
+svg.bar-chart .grid { stroke: var(--border); stroke-width: 1; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; }
+svg.bar-chart .down { fill: var(--download); }
+svg.bar-chart .up { fill: var(--upload); }
+svg.bar-chart .hit { fill: transparent; }
+svg.bar-chart .bar:hover .hit { fill: var(--surface-2); }
+svg.bar-chart .axis { fill: var(--muted); font-size: 11px; }
+
+svg.sparkline { width: 100%; height: 44px; display: block; }
+svg.sparkline .line { fill: none; stroke: var(--primary); stroke-width: 2; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+svg.sparkline .area { fill: var(--primary-soft); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
