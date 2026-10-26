@@ -88,6 +88,14 @@ void main() {
       expect(merged.firstWhere((r) => r.app == 'b').fg, isNull);
     });
 
+    test('PowerShell errors are read out of CLIXML', () {
+      const err =
+          '#< CLIXML\r\n<Objs Version="1.1.0.1"><S S="Error">Unable to find type_x000D__x000A_</S>'
+          '<S S="Error">[Windows.Networking]._x000D__x000A_</S></Objs>';
+      expect(powershellError(err), 'Unable to find type [Windows.Networking].');
+      expect(powershellError('plain\nmore'), 'plain');
+    });
+
     test('the Windows script asks for whole days in the invariant calendar', () {
       expect(windowsAppScript, contains('GetAttributedNetworkUsageAsync'));
       expect(windowsAppScript, contains('InvariantCulture'));

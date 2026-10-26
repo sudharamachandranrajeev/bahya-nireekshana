@@ -166,11 +166,28 @@ class WindowsAppSource implements AppSource {
       throw AppSourceException('Windows PowerShell is not available.');
     }
     if (r.exitCode != 0) {
-      final why = '${r.stderr}'.trim().split('\n').first;
+      final why = powershellError('${r.stderr}');
       throw AppSourceException('Windows did not give the usage per app: $why');
     }
     return parseWindowsApps('${r.stdout}');
   }
+}
+
+/// PowerShell's stderr as one readable line: run with -EncodedCommand it
+/// wraps errors in CLIXML, whose error strings are pulled out here.
+String powershellError(String stderr) {
+  final text = stderr.trim();
+  if (!text.startsWith('#< CLIXML')) return text.split('\n').first;
+  final parts = [
+    for (final m in RegExp(r'<S S="Error">(.*?)</S>', dotAll: true).allMatches(text))
+      m[1]!
+          .replaceAll('_x000D_', '')
+          .replaceAll('_x000A_', ' ')
+          .replaceAll('&lt;', '<')
+          .replaceAll('&gt;', '>')
+          .replaceAll('&amp;', '&'),
+  ];
+  return parts.isEmpty ? 'PowerShell failed' : parts.join().replaceAll(RegExp(r'\s+'), ' ').trim();
 }
 
 /// The PowerShell script's JSON as rows.
