@@ -83,7 +83,7 @@ void main() {
       final mode = dark ? 'dark' : 'light';
       await shot('now-$mode');
       if (!dark) {
-        for (final page in ['Usage', 'Plans', 'Speed test', 'Themes']) {
+        for (final page in ['Usage', 'Apps', 'Plans', 'Speed test', 'Themes']) {
           await h.go(page);
           await shot('${page.toLowerCase().replaceAll(' ', '-')}-$mode');
         }
@@ -100,6 +100,12 @@ void main() {
     await shot('now-desktop');
     await h.go('Usage');
     await shot('usage-desktop');
+    await h.go('Apps');
+    await shot('apps-desktop');
+    await h.tapText('YouTube');
+    await shot('app-detail-desktop');
+    await tester.pageBack();
+    await h.settle();
     await h.go('Connections');
     await shot('connections-desktop');
     await h.go('Firewall');

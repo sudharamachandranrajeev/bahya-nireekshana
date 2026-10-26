@@ -33,8 +33,10 @@ class UsageFilter {
   final Set<String> devices;
   final Set<String> kinds;
 
-  bool matches(DayUsage d) =>
-      (devices.isEmpty || devices.contains(d.device)) && (kinds.isEmpty || kinds.contains(d.kind));
+  bool matches(DayUsage d) => allows(d.device, d.kind);
+
+  bool allows(String device, String kind) =>
+      (devices.isEmpty || devices.contains(device)) && (kinds.isEmpty || kinds.contains(kind));
 
   UsageFilter copyWith({Set<String>? devices, Set<String>? kinds}) =>
       UsageFilter(devices: devices ?? this.devices, kinds: kinds ?? this.kinds);

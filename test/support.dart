@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:nireekshana/db/database.dart';
+import 'package:nireekshana/domain/app_sources.dart';
 import 'package:nireekshana/domain/connections.dart';
 import 'package:nireekshana/domain/counters.dart';
 import 'package:nireekshana/domain/firewall.dart';
@@ -114,3 +115,23 @@ const sampleConnections = [
     state: 'established',
   ),
 ];
+
+/// A per-app record that answers from a list, or says it is not set up.
+class FakeAppSource implements AppSource {
+  FakeAppSource(this.rows, {this.ready = true});
+  final List<AppCount> rows;
+  bool ready;
+  final asked = <int>[];
+
+  @override
+  String get title => 'test apps';
+
+  @override
+  Future<bool> available() async => ready;
+
+  @override
+  Future<List<AppCount>> read({int days = 31}) async {
+    asked.add(days);
+    return rows;
+  }
+}

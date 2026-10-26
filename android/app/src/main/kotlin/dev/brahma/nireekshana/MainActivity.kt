@@ -57,14 +57,11 @@ class MainActivity : FlutterFragmentActivity() {
                 }
                 "deviceUsage" -> {
                     val days = call.argument<Int>("days") ?: 62
-                    worker.execute {
-                        try {
-                            val list = net.deviceUsage(days)
-                            main.post { result.success(list) }
-                        } catch (e: Exception) {
-                            main.post { result.error("stats_failed", e.message, null) }
-                        }
-                    }
+                    inBackground(result) { net.deviceUsage(days) }
+                }
+                "appUsage" -> {
+                    val days = call.argument<Int>("days") ?: 31
+                    inBackground(result) { net.appUsage(days) }
                 }
                 else -> result.notImplemented()
             }
@@ -100,6 +97,17 @@ class MainActivity : FlutterFragmentActivity() {
                     "deviceName" -> result.success(deviceName())
                     else -> result.notImplemented()
                 }
+            }
+        }
+    }
+
+    private fun inBackground(result: MethodChannel.Result, query: () -> Any?) {
+        worker.execute {
+            try {
+                val value = query()
+                main.post { result.success(value) }
+            } catch (e: Exception) {
+                main.post { result.error("stats_failed", e.message, null) }
             }
         }
     }

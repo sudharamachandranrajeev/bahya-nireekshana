@@ -5,7 +5,8 @@
 #   vnstat      per-connection traffic history (day / week / month)
 #   OpenSnitch  per-app firewall: asks before an unknown app connects, keeps
 #               allow/deny rules, and enforces the Bahya Nireekshana blocklists
-#   nethogs     live per-app usage (opened from the widget in a terminal)
+#   nethogs     live per-app usage (opened from the widget in a terminal), and
+#               daily usage per app for the app's Apps page (nireekshana-apps)
 #
 # Usage: sudo ./install.sh          install / repair (safe to re-run)
 #        ./install.sh --check       show what's installed, change nothing
@@ -16,6 +17,8 @@
 #   /usr/local/bin/nireekshana-rules                      lets the widget list and change rules
 #   /usr/share/polkit-1/actions/local.rajeevrama.nireekshana.rules.policy
 #   /etc/systemd/system/nireekshana-rules-export.{service,path}
+#   /usr/local/bin/nireekshana-apps, /etc/systemd/system/nireekshana-apps.service
+#   /var/lib/nireekshana/apps.json                       daily usage per app
 #   ~/.config/autostart/opensnitch_ui.desktop             starts the prompt window at login
 #
 # The project was called netwatch before. A machine set up under that name is
@@ -53,6 +56,7 @@ check() {
   if [[ -d $LISTS ]]; then note "lists: $LISTS"; else note "lists: not set up"; fi
   if [[ -x /usr/local/bin/nireekshana-rules && -f $POLICY ]]; then note "rules manager: installed"; else note "rules manager: not installed"; fi
   note "nireekshana-rules-export.path: $(systemctl is-active nireekshana-rules-export.path 2>/dev/null || true)"
+  note "nireekshana-apps.service: $(systemctl is-active nireekshana-apps.service 2>/dev/null || true)"
   if [[ -e /usr/local/bin/netwatch-rules || -d $OLD_LISTS ]]; then note "old netwatch setup: still there (run with sudo to move it over)"; fi
 }
 
@@ -240,6 +244,14 @@ systemctl enable --now nireekshana-rules-export.path
 systemctl enable nireekshana-rules-export.service
 systemctl start nireekshana-rules-export.service
 note "rules summary: /run/nireekshana/rules.json"
+
+say "Installing the per-app usage counter"
+install -m 755 "$HERE/bin/nireekshana-apps" /usr/local/bin/nireekshana-apps
+install -m 644 "$HERE/systemd/nireekshana-apps.service" /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable nireekshana-apps.service
+systemctl restart nireekshana-apps.service
+note "daily usage per app: /var/lib/nireekshana/apps.json"
 
 # ---------- prompt window at login ----------
 

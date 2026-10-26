@@ -1,6 +1,7 @@
 package dev.brahma.nireekshana
 
 import android.app.AppOpsManager
+import android.app.usage.NetworkStats
 import android.app.usage.NetworkStatsManager
 import android.content.Context
 import android.net.ConnectivityManager
@@ -62,6 +63,68 @@ class NetStats(private val context: Context) {
             }
         }
         return out
+    }
+
+    /**
+     * Each app's usage per day for the last [days] days, by kind of network:
+     * day, kind, app (package name, or uid:<n> for traffic no one app owns),
+     * name, rx, tx and fg (bytes both ways while the app was on screen).
+     */
+    fun appUsage(days: Int): List<Map<String, Any>> {
+        // (day, kind, uid) to rx, tx, foreground.
+        val totals = HashMap<Triple<String, String, Int>, LongArray>()
+        val bucket = NetworkStats.Bucket()
+        for ((day, start, end) in dayRanges(days)) {
+            for ((type, kind) in KINDS) {
+                val summary = try {
+                    stats.querySummary(type, null, start, end)
+                } catch (e: Exception) {
+                    null
+                } ?: continue
+                try {
+                    while (summary.hasNextBucket()) {
+                        summary.getNextBucket(bucket)
+                        if (bucket.rxBytes == 0L && bucket.txBytes == 0L) continue
+                        val t = totals.getOrPut(Triple(day, kind, bucket.uid)) { LongArray(3) }
+                        t[0] += bucket.rxBytes
+                        t[1] += bucket.txBytes
+                        if (bucket.state == NetworkStats.Bucket.STATE_FOREGROUND) t[2] += bucket.rxBytes + bucket.txBytes
+                    }
+                } finally {
+                    summary.close()
+                }
+            }
+        }
+        val apps = HashMap<Int, Pair<String, String>>()
+        return totals.map { (key, t) ->
+            val (app, name) = apps.getOrPut(key.third) { describe(key.third) }
+            mapOf(
+                "day" to key.first, "kind" to key.second, "app" to app, "name" to name,
+                "rx" to t[0], "tx" to t[1], "fg" to t[2],
+            )
+        }
+    }
+
+    /** A user id as (stable key, name to show). */
+    private fun describe(uid: Int): Pair<String, String> {
+        when (uid) {
+            NetworkStats.Bucket.UID_REMOVED -> return "uid:removed" to "Removed apps"
+            NetworkStats.Bucket.UID_TETHERING -> return "uid:tethering" to "Hotspot and tethering"
+            0 -> return "uid:0" to "Android system (root)"
+            Process.SYSTEM_UID -> return "android" to "Android system"
+        }
+        val pm = context.packageManager
+        val packages = pm.getPackagesForUid(uid)
+        if (packages.isNullOrEmpty()) return "uid:$uid" to (pm.getNameForUid(uid) ?: "App $uid")
+        fun label(p: String) = try {
+            pm.getApplicationLabel(pm.getApplicationInfo(p, 0)).toString()
+        } catch (e: Exception) {
+            p
+        }
+        if (packages.size == 1) return packages[0] to label(packages[0])
+        // Apps sharing one id (the phone and its helpers, say) are counted together.
+        val key = pm.getNameForUid(uid)?.substringBefore(':') ?: packages.sorted()[0]
+        return key to "${label(packages.sorted()[0])} and ${packages.size - 1} more"
     }
 
     companion object {

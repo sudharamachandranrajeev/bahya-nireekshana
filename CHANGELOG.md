@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.2.0 (2026-10-26)
+
+- Apps: each app's data use today, over 7 or 30 days or this month, against the period before.
+  Every app ranked with its share, download and upload, new apps, the top three's share and the
+  share moved in the background (Android). Tap an app for its last 30 days, busiest day, daily
+  average, and the networks and devices it used. Filter by device or kind of network.
+- Android reads each app's usage from the system's network statistics (usage access, which the
+  device history already asks for). Windows reads its own data usage per app. On Linux, the new
+  `nireekshana-apps` service counts each program with nethogs; run `sudo omarchy/install.sh` once
+  to set it up.
+- Usage per app syncs with your other devices; forgetting a device forgets its apps too.
+- The database moves to version 2; existing data is kept.
+- Usage chart labels no longer run into each other or off the edge, and a plan's period marker is
+  a tick again.
+
 ## 0.1.0 (2026-10-26)
 
 The first release of the app, after the Omarchy widget (formerly *netwatch*).

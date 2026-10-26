@@ -27,6 +27,12 @@ rm -rf /run/netwatch
 systemctl daemon-reload
 echo "Removed the widget's rules manager."
 
+systemctl disable --now nireekshana-apps.service 2>/dev/null || true
+rm -f /etc/systemd/system/nireekshana-apps.service /usr/local/bin/nireekshana-apps
+systemctl daemon-reload
+if (( purge )); then rm -rf /var/lib/nireekshana; fi
+echo "Removed the per-app usage counter (its history in /var/lib/nireekshana stays unless --purge)."
+
 rm -f /etc/opensnitchd/rules/000-nireekshana-*.json /etc/opensnitchd/rules/001-nireekshana-*.json \
   /etc/opensnitchd/rules/002-nireekshana-*.json
 rm -rf /etc/opensnitchd/nireekshana

@@ -27,6 +27,7 @@ void main() {
           // The device itself, faked so the test reads no real counters.
           probeProvider.overrideWithValue(FakeProbe()),
           usageSourceProvider.overrideWithValue(null),
+          appSourceProvider.overrideWithValue(null),
         ],
         retry: (_, _) => null,
         child: Consumer(

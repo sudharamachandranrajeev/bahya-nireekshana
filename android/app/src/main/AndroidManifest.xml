@@ -10,6 +10,12 @@
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions"/>
+    <!-- Names the apps in the per-app usage (the Apps page): NetworkStatsManager
+         reports apps by user id, and Android 11+ hides other packages
+         without this. The app is not distributed through Google Play. -->
+    <uses-permission
+        android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission"/>
     <!-- The in-app updater hands a downloaded, checksum-checked APK to the
          system installer, which still asks the user. -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>

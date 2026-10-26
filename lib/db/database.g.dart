@@ -509,6 +509,604 @@ class NirDaysCompanion extends UpdateCompanion<DayUsage> {
   }
 }
 
+class $NirAppsTable extends NirApps with TableInfo<$NirAppsTable, AppUsage> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $NirAppsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcMeta = const VerificationMeta('hlc');
+  @override
+  late final GeneratedColumn<String> hlc = GeneratedColumn<String>(
+    'hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _deletedMeta = const VerificationMeta('deleted');
+  @override
+  late final GeneratedColumn<bool> deleted = GeneratedColumn<bool>(
+    'deleted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('CHECK ("deleted" IN (0, 1))'),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _deviceMeta = const VerificationMeta('device');
+  @override
+  late final GeneratedColumn<String> device = GeneratedColumn<String>(
+    'device',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deviceNameMeta = const VerificationMeta('deviceName');
+  @override
+  late final GeneratedColumn<String> deviceName = GeneratedColumn<String>(
+    'device_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _dayMeta = const VerificationMeta('day');
+  @override
+  late final GeneratedColumn<String> day = GeneratedColumn<String>(
+    'day',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _appMeta = const VerificationMeta('app');
+  @override
+  late final GeneratedColumn<String> app = GeneratedColumn<String>(
+    'app',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rxMeta = const VerificationMeta('rx');
+  @override
+  late final GeneratedColumn<int> rx = GeneratedColumn<int>(
+    'rx',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _txMeta = const VerificationMeta('tx');
+  @override
+  late final GeneratedColumn<int> tx = GeneratedColumn<int>(
+    'tx',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _fgMeta = const VerificationMeta('fg');
+  @override
+  late final GeneratedColumn<int> fg = GeneratedColumn<int>(
+    'fg',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    hlc,
+    deleted,
+    device,
+    deviceName,
+    day,
+    app,
+    name,
+    kind,
+    rx,
+    tx,
+    fg,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'nir_apps';
+  @override
+  VerificationContext validateIntegrity(Insertable<AppUsage> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('hlc')) {
+      context.handle(_hlcMeta, hlc.isAcceptableOrUnknown(data['hlc']!, _hlcMeta));
+    }
+    if (data.containsKey('deleted')) {
+      context.handle(_deletedMeta, deleted.isAcceptableOrUnknown(data['deleted']!, _deletedMeta));
+    }
+    if (data.containsKey('device')) {
+      context.handle(_deviceMeta, device.isAcceptableOrUnknown(data['device']!, _deviceMeta));
+    } else if (isInserting) {
+      context.missing(_deviceMeta);
+    }
+    if (data.containsKey('device_name')) {
+      context.handle(
+        _deviceNameMeta,
+        deviceName.isAcceptableOrUnknown(data['device_name']!, _deviceNameMeta),
+      );
+    }
+    if (data.containsKey('day')) {
+      context.handle(_dayMeta, day.isAcceptableOrUnknown(data['day']!, _dayMeta));
+    } else if (isInserting) {
+      context.missing(_dayMeta);
+    }
+    if (data.containsKey('app')) {
+      context.handle(_appMeta, app.isAcceptableOrUnknown(data['app']!, _appMeta));
+    } else if (isInserting) {
+      context.missing(_appMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(_nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('kind')) {
+      context.handle(_kindMeta, kind.isAcceptableOrUnknown(data['kind']!, _kindMeta));
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('rx')) {
+      context.handle(_rxMeta, rx.isAcceptableOrUnknown(data['rx']!, _rxMeta));
+    }
+    if (data.containsKey('tx')) {
+      context.handle(_txMeta, tx.isAcceptableOrUnknown(data['tx']!, _txMeta));
+    }
+    if (data.containsKey('fg')) {
+      context.handle(_fgMeta, fg.isAcceptableOrUnknown(data['fg']!, _fgMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  AppUsage map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AppUsage(
+      id: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      hlc: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}hlc'])!,
+      deleted: attachedDatabase.typeMapping.read(DriftSqlType.bool, data['${effectivePrefix}deleted'])!,
+      device: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}device'])!,
+      deviceName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_name'],
+      )!,
+      day: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}day'])!,
+      app: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}app'])!,
+      name: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      kind: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}kind'])!,
+      rx: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}rx'])!,
+      tx: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}tx'])!,
+      fg: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}fg']),
+    );
+  }
+
+  @override
+  $NirAppsTable createAlias(String alias) {
+    return $NirAppsTable(attachedDatabase, alias);
+  }
+}
+
+class AppUsage extends DataClass implements Insertable<AppUsage> {
+  final String id;
+  final String hlc;
+  final bool deleted;
+  final String device;
+  final String deviceName;
+  final String day;
+
+  /// What the system knows the program by: an Android package name, a
+  /// program's path on Linux, a Windows attribution id, or `uid:<n>` and
+  /// the like for traffic no single app owns.
+  final String app;
+  final String name;
+
+  /// wifi | ethernet | mobile | other
+  final String kind;
+  final int rx;
+  final int tx;
+
+  /// Bytes (both ways) moved while the app was on screen; null where the
+  /// system does not say (only Android does).
+  final int? fg;
+  const AppUsage({
+    required this.id,
+    required this.hlc,
+    required this.deleted,
+    required this.device,
+    required this.deviceName,
+    required this.day,
+    required this.app,
+    required this.name,
+    required this.kind,
+    required this.rx,
+    required this.tx,
+    this.fg,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['hlc'] = Variable<String>(hlc);
+    map['deleted'] = Variable<bool>(deleted);
+    map['device'] = Variable<String>(device);
+    map['device_name'] = Variable<String>(deviceName);
+    map['day'] = Variable<String>(day);
+    map['app'] = Variable<String>(app);
+    map['name'] = Variable<String>(name);
+    map['kind'] = Variable<String>(kind);
+    map['rx'] = Variable<int>(rx);
+    map['tx'] = Variable<int>(tx);
+    if (!nullToAbsent || fg != null) {
+      map['fg'] = Variable<int>(fg);
+    }
+    return map;
+  }
+
+  NirAppsCompanion toCompanion(bool nullToAbsent) {
+    return NirAppsCompanion(
+      id: Value(id),
+      hlc: Value(hlc),
+      deleted: Value(deleted),
+      device: Value(device),
+      deviceName: Value(deviceName),
+      day: Value(day),
+      app: Value(app),
+      name: Value(name),
+      kind: Value(kind),
+      rx: Value(rx),
+      tx: Value(tx),
+      fg: fg == null && nullToAbsent ? const Value.absent() : Value(fg),
+    );
+  }
+
+  factory AppUsage.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AppUsage(
+      id: serializer.fromJson<String>(json['id']),
+      hlc: serializer.fromJson<String>(json['hlc']),
+      deleted: serializer.fromJson<bool>(json['deleted']),
+      device: serializer.fromJson<String>(json['device']),
+      deviceName: serializer.fromJson<String>(json['deviceName']),
+      day: serializer.fromJson<String>(json['day']),
+      app: serializer.fromJson<String>(json['app']),
+      name: serializer.fromJson<String>(json['name']),
+      kind: serializer.fromJson<String>(json['kind']),
+      rx: serializer.fromJson<int>(json['rx']),
+      tx: serializer.fromJson<int>(json['tx']),
+      fg: serializer.fromJson<int?>(json['fg']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'hlc': serializer.toJson<String>(hlc),
+      'deleted': serializer.toJson<bool>(deleted),
+      'device': serializer.toJson<String>(device),
+      'deviceName': serializer.toJson<String>(deviceName),
+      'day': serializer.toJson<String>(day),
+      'app': serializer.toJson<String>(app),
+      'name': serializer.toJson<String>(name),
+      'kind': serializer.toJson<String>(kind),
+      'rx': serializer.toJson<int>(rx),
+      'tx': serializer.toJson<int>(tx),
+      'fg': serializer.toJson<int?>(fg),
+    };
+  }
+
+  AppUsage copyWith({
+    String? id,
+    String? hlc,
+    bool? deleted,
+    String? device,
+    String? deviceName,
+    String? day,
+    String? app,
+    String? name,
+    String? kind,
+    int? rx,
+    int? tx,
+    Value<int?> fg = const Value.absent(),
+  }) => AppUsage(
+    id: id ?? this.id,
+    hlc: hlc ?? this.hlc,
+    deleted: deleted ?? this.deleted,
+    device: device ?? this.device,
+    deviceName: deviceName ?? this.deviceName,
+    day: day ?? this.day,
+    app: app ?? this.app,
+    name: name ?? this.name,
+    kind: kind ?? this.kind,
+    rx: rx ?? this.rx,
+    tx: tx ?? this.tx,
+    fg: fg.present ? fg.value : this.fg,
+  );
+  AppUsage copyWithCompanion(NirAppsCompanion data) {
+    return AppUsage(
+      id: data.id.present ? data.id.value : this.id,
+      hlc: data.hlc.present ? data.hlc.value : this.hlc,
+      deleted: data.deleted.present ? data.deleted.value : this.deleted,
+      device: data.device.present ? data.device.value : this.device,
+      deviceName: data.deviceName.present ? data.deviceName.value : this.deviceName,
+      day: data.day.present ? data.day.value : this.day,
+      app: data.app.present ? data.app.value : this.app,
+      name: data.name.present ? data.name.value : this.name,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      rx: data.rx.present ? data.rx.value : this.rx,
+      tx: data.tx.present ? data.tx.value : this.tx,
+      fg: data.fg.present ? data.fg.value : this.fg,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppUsage(')
+          ..write('id: $id, ')
+          ..write('hlc: $hlc, ')
+          ..write('deleted: $deleted, ')
+          ..write('device: $device, ')
+          ..write('deviceName: $deviceName, ')
+          ..write('day: $day, ')
+          ..write('app: $app, ')
+          ..write('name: $name, ')
+          ..write('kind: $kind, ')
+          ..write('rx: $rx, ')
+          ..write('tx: $tx, ')
+          ..write('fg: $fg')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, hlc, deleted, device, deviceName, day, app, name, kind, rx, tx, fg);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AppUsage &&
+          other.id == this.id &&
+          other.hlc == this.hlc &&
+          other.deleted == this.deleted &&
+          other.device == this.device &&
+          other.deviceName == this.deviceName &&
+          other.day == this.day &&
+          other.app == this.app &&
+          other.name == this.name &&
+          other.kind == this.kind &&
+          other.rx == this.rx &&
+          other.tx == this.tx &&
+          other.fg == this.fg);
+}
+
+class NirAppsCompanion extends UpdateCompanion<AppUsage> {
+  final Value<String> id;
+  final Value<String> hlc;
+  final Value<bool> deleted;
+  final Value<String> device;
+  final Value<String> deviceName;
+  final Value<String> day;
+  final Value<String> app;
+  final Value<String> name;
+  final Value<String> kind;
+  final Value<int> rx;
+  final Value<int> tx;
+  final Value<int?> fg;
+  final Value<int> rowid;
+  const NirAppsCompanion({
+    this.id = const Value.absent(),
+    this.hlc = const Value.absent(),
+    this.deleted = const Value.absent(),
+    this.device = const Value.absent(),
+    this.deviceName = const Value.absent(),
+    this.day = const Value.absent(),
+    this.app = const Value.absent(),
+    this.name = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.rx = const Value.absent(),
+    this.tx = const Value.absent(),
+    this.fg = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  NirAppsCompanion.insert({
+    required String id,
+    this.hlc = const Value.absent(),
+    this.deleted = const Value.absent(),
+    required String device,
+    this.deviceName = const Value.absent(),
+    required String day,
+    required String app,
+    required String name,
+    required String kind,
+    this.rx = const Value.absent(),
+    this.tx = const Value.absent(),
+    this.fg = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       device = Value(device),
+       day = Value(day),
+       app = Value(app),
+       name = Value(name),
+       kind = Value(kind);
+  static Insertable<AppUsage> custom({
+    Expression<String>? id,
+    Expression<String>? hlc,
+    Expression<bool>? deleted,
+    Expression<String>? device,
+    Expression<String>? deviceName,
+    Expression<String>? day,
+    Expression<String>? app,
+    Expression<String>? name,
+    Expression<String>? kind,
+    Expression<int>? rx,
+    Expression<int>? tx,
+    Expression<int>? fg,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (hlc != null) 'hlc': hlc,
+      if (deleted != null) 'deleted': deleted,
+      if (device != null) 'device': device,
+      if (deviceName != null) 'device_name': deviceName,
+      if (day != null) 'day': day,
+      if (app != null) 'app': app,
+      if (name != null) 'name': name,
+      if (kind != null) 'kind': kind,
+      if (rx != null) 'rx': rx,
+      if (tx != null) 'tx': tx,
+      if (fg != null) 'fg': fg,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  NirAppsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? hlc,
+    Value<bool>? deleted,
+    Value<String>? device,
+    Value<String>? deviceName,
+    Value<String>? day,
+    Value<String>? app,
+    Value<String>? name,
+    Value<String>? kind,
+    Value<int>? rx,
+    Value<int>? tx,
+    Value<int?>? fg,
+    Value<int>? rowid,
+  }) {
+    return NirAppsCompanion(
+      id: id ?? this.id,
+      hlc: hlc ?? this.hlc,
+      deleted: deleted ?? this.deleted,
+      device: device ?? this.device,
+      deviceName: deviceName ?? this.deviceName,
+      day: day ?? this.day,
+      app: app ?? this.app,
+      name: name ?? this.name,
+      kind: kind ?? this.kind,
+      rx: rx ?? this.rx,
+      tx: tx ?? this.tx,
+      fg: fg ?? this.fg,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (hlc.present) {
+      map['hlc'] = Variable<String>(hlc.value);
+    }
+    if (deleted.present) {
+      map['deleted'] = Variable<bool>(deleted.value);
+    }
+    if (device.present) {
+      map['device'] = Variable<String>(device.value);
+    }
+    if (deviceName.present) {
+      map['device_name'] = Variable<String>(deviceName.value);
+    }
+    if (day.present) {
+      map['day'] = Variable<String>(day.value);
+    }
+    if (app.present) {
+      map['app'] = Variable<String>(app.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (rx.present) {
+      map['rx'] = Variable<int>(rx.value);
+    }
+    if (tx.present) {
+      map['tx'] = Variable<int>(tx.value);
+    }
+    if (fg.present) {
+      map['fg'] = Variable<int>(fg.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NirAppsCompanion(')
+          ..write('id: $id, ')
+          ..write('hlc: $hlc, ')
+          ..write('deleted: $deleted, ')
+          ..write('device: $device, ')
+          ..write('deviceName: $deviceName, ')
+          ..write('day: $day, ')
+          ..write('app: $app, ')
+          ..write('name: $name, ')
+          ..write('kind: $kind, ')
+          ..write('rx: $rx, ')
+          ..write('tx: $tx, ')
+          ..write('fg: $fg, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $NirPlansTable extends NirPlans with TableInfo<$NirPlansTable, DataPlan> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -2821,6 +3419,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $NirDaysTable nirDays = $NirDaysTable(this);
+  late final $NirAppsTable nirApps = $NirAppsTable(this);
   late final $NirPlansTable nirPlans = $NirPlansTable(this);
   late final $NirSpeedTestsTable nirSpeedTests = $NirSpeedTestsTable(this);
   late final $NirThemesTable nirThemes = $NirThemesTable(this);
@@ -2834,6 +3433,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     nirDays,
+    nirApps,
     nirPlans,
     nirSpeedTests,
     nirThemes,
@@ -3082,6 +3682,273 @@ typedef $$NirDaysTableProcessedTableManager =
       $$NirDaysTableUpdateCompanionBuilder,
       (DayUsage, BaseReferences<_$AppDatabase, $NirDaysTable, DayUsage>),
       DayUsage,
+      PrefetchHooks Function()
+    >;
+typedef $$NirAppsTableCreateCompanionBuilder = NirAppsCompanion Function({
+  required String id,
+  Value<String> hlc,
+  Value<bool> deleted,
+  required String device,
+  Value<String> deviceName,
+  required String day,
+  required String app,
+  required String name,
+  required String kind,
+  Value<int> rx,
+  Value<int> tx,
+  Value<int?> fg,
+  Value<int> rowid,
+});
+typedef $$NirAppsTableUpdateCompanionBuilder = NirAppsCompanion Function({
+  Value<String> id,
+  Value<String> hlc,
+  Value<bool> deleted,
+  Value<String> device,
+  Value<String> deviceName,
+  Value<String> day,
+  Value<String> app,
+  Value<String> name,
+  Value<String> kind,
+  Value<int> rx,
+  Value<int> tx,
+  Value<int?> fg,
+  Value<int> rowid,
+});
+
+class $$NirAppsTableFilterComposer extends Composer<_$AppDatabase, $NirAppsTable> {
+  $$NirAppsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get hlc =>
+      $composableBuilder(column: $table.hlc, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get deleted =>
+      $composableBuilder(column: $table.deleted, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get device =>
+      $composableBuilder(column: $table.device, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get deviceName =>
+      $composableBuilder(column: $table.deviceName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get day =>
+      $composableBuilder(column: $table.day, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get app =>
+      $composableBuilder(column: $table.app, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get rx =>
+      $composableBuilder(column: $table.rx, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get tx =>
+      $composableBuilder(column: $table.tx, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get fg =>
+      $composableBuilder(column: $table.fg, builder: (column) => ColumnFilters(column));
+}
+
+class $$NirAppsTableOrderingComposer extends Composer<_$AppDatabase, $NirAppsTable> {
+  $$NirAppsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get hlc =>
+      $composableBuilder(column: $table.hlc, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get deleted =>
+      $composableBuilder(column: $table.deleted, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get device =>
+      $composableBuilder(column: $table.device, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get deviceName =>
+      $composableBuilder(column: $table.deviceName, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get day =>
+      $composableBuilder(column: $table.day, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get app =>
+      $composableBuilder(column: $table.app, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get rx =>
+      $composableBuilder(column: $table.rx, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get tx =>
+      $composableBuilder(column: $table.tx, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get fg =>
+      $composableBuilder(column: $table.fg, builder: (column) => ColumnOrderings(column));
+}
+
+class $$NirAppsTableAnnotationComposer extends Composer<_$AppDatabase, $NirAppsTable> {
+  $$NirAppsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id => $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get hlc => $composableBuilder(column: $table.hlc, builder: (column) => column);
+
+  GeneratedColumn<bool> get deleted =>
+      $composableBuilder(column: $table.deleted, builder: (column) => column);
+
+  GeneratedColumn<String> get device =>
+      $composableBuilder(column: $table.device, builder: (column) => column);
+
+  GeneratedColumn<String> get deviceName =>
+      $composableBuilder(column: $table.deviceName, builder: (column) => column);
+
+  GeneratedColumn<String> get day => $composableBuilder(column: $table.day, builder: (column) => column);
+
+  GeneratedColumn<String> get app => $composableBuilder(column: $table.app, builder: (column) => column);
+
+  GeneratedColumn<String> get name => $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get kind => $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<int> get rx => $composableBuilder(column: $table.rx, builder: (column) => column);
+
+  GeneratedColumn<int> get tx => $composableBuilder(column: $table.tx, builder: (column) => column);
+
+  GeneratedColumn<int> get fg => $composableBuilder(column: $table.fg, builder: (column) => column);
+}
+
+class $$NirAppsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $NirAppsTable,
+          AppUsage,
+          $$NirAppsTableFilterComposer,
+          $$NirAppsTableOrderingComposer,
+          $$NirAppsTableAnnotationComposer,
+          $$NirAppsTableCreateCompanionBuilder,
+          $$NirAppsTableUpdateCompanionBuilder,
+          (AppUsage, BaseReferences<_$AppDatabase, $NirAppsTable, AppUsage>),
+          AppUsage,
+          PrefetchHooks Function()
+        > {
+  $$NirAppsTableTableManager(_$AppDatabase db, $NirAppsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $$NirAppsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$NirAppsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $$NirAppsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> hlc = const Value.absent(),
+                Value<bool> deleted = const Value.absent(),
+                Value<String> device = const Value.absent(),
+                Value<String> deviceName = const Value.absent(),
+                Value<String> day = const Value.absent(),
+                Value<String> app = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> kind = const Value.absent(),
+                Value<int> rx = const Value.absent(),
+                Value<int> tx = const Value.absent(),
+                Value<int?> fg = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => NirAppsCompanion(
+                id: id,
+                hlc: hlc,
+                deleted: deleted,
+                device: device,
+                deviceName: deviceName,
+                day: day,
+                app: app,
+                name: name,
+                kind: kind,
+                rx: rx,
+                tx: tx,
+                fg: fg,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                Value<String> hlc = const Value.absent(),
+                Value<bool> deleted = const Value.absent(),
+                required String device,
+                Value<String> deviceName = const Value.absent(),
+                required String day,
+                required String app,
+                required String name,
+                required String kind,
+                Value<int> rx = const Value.absent(),
+                Value<int> tx = const Value.absent(),
+                Value<int?> fg = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => NirAppsCompanion.insert(
+                id: id,
+                hlc: hlc,
+                deleted: deleted,
+                device: device,
+                deviceName: deviceName,
+                day: day,
+                app: app,
+                name: name,
+                kind: kind,
+                rx: rx,
+                tx: tx,
+                fg: fg,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$NirAppsTable, AppUsage>(table),
+                  BaseReferences<_$AppDatabase, $NirAppsTable, AppUsage>(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$NirAppsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $NirAppsTable,
+      AppUsage,
+      $$NirAppsTableFilterComposer,
+      $$NirAppsTableOrderingComposer,
+      $$NirAppsTableAnnotationComposer,
+      $$NirAppsTableCreateCompanionBuilder,
+      $$NirAppsTableUpdateCompanionBuilder,
+      (AppUsage, BaseReferences<_$AppDatabase, $NirAppsTable, AppUsage>),
+      AppUsage,
       PrefetchHooks Function()
     >;
 typedef $$NirPlansTableCreateCompanionBuilder = NirPlansCompanion Function({
@@ -4278,6 +5145,7 @@ class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
   $$NirDaysTableTableManager get nirDays => $$NirDaysTableTableManager(_db, _db.nirDays);
+  $$NirAppsTableTableManager get nirApps => $$NirAppsTableTableManager(_db, _db.nirApps);
   $$NirPlansTableTableManager get nirPlans => $$NirPlansTableTableManager(_db, _db.nirPlans);
   $$NirSpeedTestsTableTableManager get nirSpeedTests =>
       $$NirSpeedTestsTableTableManager(_db, _db.nirSpeedTests);

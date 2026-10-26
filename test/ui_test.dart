@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nireekshana/app/modules.dart';
+import 'package:brahma_core/brahma_core.dart';
 import 'package:nireekshana/domain/book.dart';
 
 import 'app_harness.dart';
 import 'seed.dart';
+import 'support.dart';
 
 /// Smoke tests: every page builds, with and without data, on phone and
 /// desktop widths, without throwing or overflowing; and the main flows.
@@ -129,6 +131,58 @@ void main() {
     expect(find.text('Last 12 months'), findsOneWidget);
     expect(find.text('By device'), findsOneWidget);
     expect(find.textContaining('Pixel 9'), findsWidgets);
+    await app.close();
+  });
+
+  testWidgets('the Apps page ranks apps and opens one', (tester) async {
+    final app = AppHarness(tester)..desktop();
+    await app.open(seed: seedBook);
+    await app.run();
+    await app.go('Apps');
+    expect(find.text('Every app'), findsOneWidget);
+    expect(find.text('YouTube'), findsWidgets);
+    // The phone says what moved in the background; the laptop cannot.
+    expect(find.text('Background'), findsOneWidget);
+    await app.tapText('Pixel 9');
+    expect(find.text('firefox'), findsNothing);
+    await app.tapText('Everything');
+    await app.tapText('firefox');
+    expect(find.text('/usr/lib/firefox/firefox'), findsOneWidget);
+    expect(find.text('Last 30 days'), findsOneWidget);
+    expect(find.text('Busiest day'), findsOneWidget);
+    await app.close();
+  });
+
+  testWidgets('usage per app is imported from the system record', (tester) async {
+    final app = AppHarness(tester)..desktop();
+    final source = FakeAppSource([
+      (day: today(), app: '/usr/bin/curl', name: 'curl', kind: 'wifi', rx: 5 * mb, tx: mb, fg: null),
+    ]);
+    app.appSource = source;
+    await app.open();
+    await app.run();
+    await app.go('Apps');
+    expect(source.asked, [31]);
+    expect(find.text('curl'), findsWidgets);
+    final rows = await tester.runAsync(() => app.book.appsSince('2000-01-01'));
+    expect(rows!.single.rx, 5 * mb);
+    // Five minutes later it reads only the last two days.
+    for (var i = 0; i < 301; i++) {
+      await tester.pump(const Duration(seconds: 1));
+    }
+    await app.settle();
+    expect(source.asked, [31, 2]);
+    await app.close();
+  });
+
+  testWidgets('the Apps page says when the record needs setting up', (tester) async {
+    final app = AppHarness(tester)..desktop();
+    app.appSource = FakeAppSource(const [], ready: false);
+    await app.open();
+    await app.run();
+    await app.go('Apps');
+    expect(find.text('Apps on this device'), findsOneWidget);
+    expect(find.text('No usage per app yet'), findsOneWidget);
     await app.close();
   });
 }

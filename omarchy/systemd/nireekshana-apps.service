@@ -1,0 +1,19 @@
+[Unit]
+Description=Count each program's network traffic per day for Bahya Nireekshana
+Documentation=file:///usr/local/bin/nireekshana-apps
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/nireekshana-apps
+Restart=on-failure
+RestartSec=30
+# nethogs needs to capture packets and read every process's sockets.
+StateDirectory=nireekshana
+StateDirectoryMode=0755
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=yes
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

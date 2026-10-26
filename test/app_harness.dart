@@ -8,6 +8,7 @@ import 'package:http/testing.dart';
 import 'package:nireekshana/app/app.dart';
 import 'package:nireekshana/app/providers.dart';
 import 'package:nireekshana/app/session.dart';
+import 'package:nireekshana/domain/app_sources.dart';
 import 'package:nireekshana/domain/book.dart';
 
 import 'support.dart';
@@ -20,6 +21,9 @@ class AppHarness {
   final WidgetTester tester;
   late AppSession session;
   final firewall = FakeFirewall();
+
+  /// This device's per-app record; none unless a test sets one.
+  AppSource? appSource;
 
   NetBook get book => session.book;
 
@@ -47,6 +51,7 @@ class AppHarness {
     ),
     probeProvider.overrideWithValue(FakeProbe()),
     usageSourceProvider.overrideWithValue(null),
+    appSourceProvider.overrideWithValue(appSource),
     firewallProvider.overrideWithValue(firewall),
     connectionsProvider.overrideWith((ref) => sampleConnections),
   ];

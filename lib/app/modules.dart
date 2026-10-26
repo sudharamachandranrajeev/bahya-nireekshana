@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:brahma_core/brahma_core.dart';
 import 'package:flutter/material.dart';
 
+import '../ui/apps_page.dart';
 import '../ui/connections_page.dart';
 import '../ui/firewall_page.dart';
 import '../ui/now_page.dart';
@@ -36,6 +37,7 @@ final networkModule = AppModule(
   destinations: [
     _d('now', 'Now', Icons.radar_outlined, Icons.radar, const NowPage(), primary: true),
     _d('usage', 'Usage', Icons.bar_chart_outlined, Icons.bar_chart, const UsagePage(), primary: true),
+    _d('apps', 'Apps', Icons.apps_outlined, Icons.apps, const AppsPage(), primary: true),
     _d('plans', 'Plans', Icons.data_usage_outlined, Icons.data_usage, const PlansPage(), primary: true),
     _d('speed', 'Speed test', Icons.speed_outlined, Icons.speed, const SpeedPage(), primary: true),
     if (Platform.isLinux || Platform.isWindows)

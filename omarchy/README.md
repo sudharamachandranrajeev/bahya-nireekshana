@@ -9,13 +9,14 @@ older netwatch setup over to the new names and keeps your lists.)
 | Live upload/download speed in the bar | `rajeevrama.nireekshana` widget (reads `/proc/net/dev`, no privileges) |
 | Daily / weekly / monthly usage per connection | vnstat (`vnstat.service`), shown in the widget panel |
 | Live usage per app (GUI apps, scripts, CLI tools, system services) | nethogs, opened from the widget in a terminal (`sudo nethogs -C`) |
+| Daily usage per app, for the app's Apps page | `nireekshana-apps.service`: reads nethogs in trace mode and writes `/var/lib/nireekshana/apps.json` |
 | Approval prompts for apps that haven't connected before | OpenSnitch (`opensnitchd.service` + `opensnitch-ui` at login) |
 | Blocklist / allowlist | OpenSnitch rules using the list files in `/etc/opensnitchd/nireekshana/` |
 | Reviewing and changing what's allowed or blocked | The widget's **Allowed & blocked** page, via `nireekshana-rules` |
 
-Not covered: per-app usage *history* (bytes per app per day/week/month).
-nethogs only shows the live picture; OpenSnitch's statistics window keeps
-per-app connection counts, not data volume.
+The per-app counter only counts while it runs (from when `install.sh` set it
+up), and assigns traffic to the kind of network the default route used at
+the time.
 
 ## Setup
 

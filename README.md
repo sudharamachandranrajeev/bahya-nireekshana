@@ -40,6 +40,12 @@ receive, keeps the history, and warns you before a data plan runs out.
   network (Wi-Fi, Ethernet, mobile data) or by device. Figures for this week and month, the month's
   projected total, the change against last month, the daily average, the busiest day and the upload
   share. Breakdowns by network and by device. Export to CSV.
+* **Apps** – how much data each app used today, over 7 or 30 days or this month, against the period
+  before. Every app ranked with its share, download and upload, the top app, the top three's share, new
+  apps, and (on Android) the share moved in the background. Each app has a page with its last 30 days,
+  busiest day, daily average and the networks and devices it used. The figures come from Android's
+  network statistics, Windows' data usage, or the `nireekshana-apps` service on Linux, and sync with your
+  other devices.
 * **History from the system** – on Linux the app reads vnstat when it is installed, and on Android it
   reads the system's network statistics (after you allow usage access), so the history goes back
   further than the app's own install. Elsewhere, and as a fallback, the app records its own counters
@@ -74,6 +80,7 @@ receive, keeps the history, and warns you before a data plan runs out.
   <tr>
     <td align="center"><img src="docs/screenshots/now-light.png" width="200"><br><sub>Now</sub></td>
     <td align="center"><img src="docs/screenshots/usage-light.png" width="200"><br><sub>Usage</sub></td>
+    <td align="center"><img src="docs/screenshots/apps-light.png" width="200"><br><sub>Apps</sub></td>
     <td align="center"><img src="docs/screenshots/plans-light.png" width="200"><br><sub>Plans</sub></td>
     <td align="center"><img src="docs/screenshots/speed-test-light.png" width="200"><br><sub>Speed test</sub></td>
     <td align="center"><img src="docs/screenshots/now-dark.png" width="200"><br><sub>Now (dark)</sub></td>
@@ -86,6 +93,10 @@ receive, keeps the history, and warns you before a data plan runs out.
 </p>
 
 <table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/apps-desktop.png" width="400"><br><sub>Apps</sub></td>
+    <td align="center"><img src="docs/screenshots/app-detail-desktop.png" width="400"><br><sub>One app</sub></td>
+  </tr>
   <tr>
     <td align="center"><img src="docs/screenshots/connections-desktop.png" width="400"><br><sub>Connections</sub></td>
     <td align="center"><img src="docs/screenshots/themes-desktop.png" width="400"><br><sub>Themes (Saffron)</sub></td>
@@ -127,8 +138,8 @@ $ extension/build.sh
 To work on it locally, add a gitignored `pubspec_overrides.yaml` pointing at `../brahma/core`.
 `scripts/install-linux.sh` installs a build from a checkout into your app menu.
 
-On Linux, install `vnstat` for history from before the app started. The Connections and Firewall pages
-use the setup in [omarchy/](omarchy/README.md) (`sudo omarchy/install.sh`), written for Omarchy and other
+On Linux, install `vnstat` for history from before the app started. The Apps, Connections and Firewall
+pages use the setup in [omarchy/](omarchy/README.md) (`sudo omarchy/install.sh`), written for Omarchy and other
 Arch-based systems.
 
 ## Download
@@ -141,7 +152,7 @@ each with `SHA256SUMS.txt`. See the [changelog](CHANGELOG.md) for what is new.
   libsecret and a running keyring.
 * **Windows 10/11** – run `Nireekshana-<version>-windows-x64-setup.exe`, or unzip the portable build.
 * **Android 7+** – install `Nireekshana-<version>-android.apk`. Allow usage access when the app asks, for
-  history and mobile data counts.
+  history, mobile data counts and usage per app.
 * **Chrome and Edge** – unzip `Nireekshana-<version>-chrome.zip`, open `chrome://extensions`, turn on
   developer mode and choose *Load unpacked*.
 * **Firefox** – open `about:debugging`, *This Firefox*, *Load Temporary Add-on* and pick

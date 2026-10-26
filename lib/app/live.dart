@@ -26,6 +26,20 @@ enum HistorySource {
   none,
 }
 
+/// Whether this device's usage per app can be read.
+enum AppsStatus {
+  checking,
+
+  /// Imported from the system's record.
+  ready,
+
+  /// There is a record, but it needs setting up or allowing first.
+  needsSetup,
+
+  /// This platform keeps none.
+  none,
+}
+
 class LiveState {
   const LiveState({
     this.sample,
@@ -34,6 +48,8 @@ class LiveState {
     this.history = HistorySource.checking,
     this.imported,
     this.error,
+    this.apps = AppsStatus.checking,
+    this.appsError,
   });
 
   final Sample? sample;
@@ -46,6 +62,10 @@ class LiveState {
   /// When the system record was last imported.
   final DateTime? imported;
   final Object? error;
+  final AppsStatus apps;
+
+  /// Why the last per-app import failed, if it did.
+  final String? appsError;
 
   LiveState copyWith({
     Sample? sample,
@@ -55,6 +75,9 @@ class LiveState {
     DateTime? imported,
     Object? error,
     bool clearError = false,
+    AppsStatus? apps,
+    String? appsError,
+    bool clearAppsError = false,
   }) => LiveState(
     sample: sample ?? this.sample,
     rates: rates ?? this.rates,
@@ -62,18 +85,24 @@ class LiveState {
     history: history ?? this.history,
     imported: imported ?? this.imported,
     error: clearError ? null : (error ?? this.error),
+    apps: apps ?? this.apps,
+    appsError: clearAppsError ? null : (appsError ?? this.appsError),
   );
 }
 
 /// Reads the counters every second while the app runs, and keeps the usage
 /// history: it imports the system record every few minutes where there is
 /// one, and otherwise counts with the [Recorder], writing once a minute.
+/// Each app's usage is imported on the same rhythm, where the system keeps it.
 class LiveMonitor extends Notifier<LiveState> {
   Timer? _timer;
   Recorder? _recorder;
   DateTime? _lastFlush;
   DateTime? _lastImport;
+  DateTime? _lastAppsImport;
   bool _busy = false;
+  bool _appsBusy = false;
+  bool _appsHistory = false;
 
   static const flushEvery = Duration(minutes: 1);
   static const importEvery = Duration(minutes: 5);
@@ -84,9 +113,10 @@ class LiveMonitor extends Notifier<LiveState> {
     // Back from the system settings, usage access may have been granted.
     final lifecycle = AppLifecycleListener(
       onResume: () {
-        if (state.history == HistorySource.recorder && ref.read(usageSourceProvider) != null) {
-          recheck().ignore();
-        }
+        final waiting =
+            (state.history == HistorySource.recorder && ref.read(usageSourceProvider) != null) ||
+            state.apps == AppsStatus.needsSetup;
+        if (waiting) recheck().ignore();
       },
     );
     ref.onDispose(() {
@@ -94,10 +124,11 @@ class LiveMonitor extends Notifier<LiveState> {
       _timer?.cancel();
       _recorder?.flush().ignore();
     });
-    if (probe == null) return const LiveState(history: HistorySource.none);
+    final apps = ref.read(appSourceProvider) == null ? AppsStatus.none : AppsStatus.checking;
+    if (probe == null) return LiveState(history: HistorySource.none, apps: apps);
     _timer = Timer.periodic(const Duration(seconds: 1), (_) => _tick());
     Future.microtask(_tick);
-    return const LiveState();
+    return LiveState(apps: apps);
   }
 
   Future<void> _tick() async {
@@ -124,6 +155,7 @@ class LiveMonitor extends Notifier<LiveState> {
     final book = ref.read(sessionProvider).book;
     // Timed by the readings, which carry the time they were taken.
     final now = s.at;
+    _importApps(now).ignore();
     _lastFlush ??= now;
     if (_recorder == null) {
       _recorder = Recorder(book);
@@ -163,9 +195,40 @@ class LiveMonitor extends Notifier<LiveState> {
     }
   }
 
-  /// Looks at the system record again (after usage access is granted, say).
+  /// Imports each app's usage: a month the first time, then the last two
+  /// days (today's grows, and yesterday's settles after midnight). Runs
+  /// beside the readings, since Windows can take a while to answer.
+  Future<void> _importApps(DateTime now) async {
+    final source = ref.read(appSourceProvider);
+    if (source == null || _appsBusy) return;
+    if (_lastAppsImport != null && now.difference(_lastAppsImport!) < importEvery) return;
+    _appsBusy = true;
+    _lastAppsImport = now;
+    try {
+      if (!await source.available()) {
+        _appsHistory = false;
+        if (ref.mounted) state = state.copyWith(apps: AppsStatus.needsSetup, clearAppsError: true);
+        return;
+      }
+      final rows = await source.read(days: _appsHistory ? 2 : 31);
+      if (!ref.mounted) return;
+      final changed = await ref.read(sessionProvider).book.importApps(rows);
+      _appsHistory = true;
+      if (!ref.mounted) return;
+      state = state.copyWith(apps: AppsStatus.ready, clearAppsError: true);
+      if (changed > 0) _changed();
+    } catch (e) {
+      debugPrint('Bahya Nireekshana: ${source.title} import failed: $e');
+      if (ref.mounted) state = state.copyWith(apps: AppsStatus.needsSetup, appsError: '$e');
+    } finally {
+      _appsBusy = false;
+    }
+  }
+
+  /// Looks at the system records again (after usage access is granted, say).
   Future<void> recheck() async {
     _lastImport = null;
+    _lastAppsImport = null;
     state = state.copyWith(history: HistorySource.checking);
     await _tick();
   }

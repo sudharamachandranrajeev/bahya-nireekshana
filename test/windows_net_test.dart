@@ -4,6 +4,7 @@ library;
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nireekshana/domain/app_sources.dart';
 import 'package:nireekshana/domain/windows_net.dart';
 
 /// Runs the IP Helper calls against the real Windows API, so a wrong struct
@@ -42,4 +43,17 @@ void main() {
       await server.close();
     }
   });
+
+  test('the data usage per app comes back as rows', () async {
+    // A fresh runner may have little attributed usage; the call itself and
+    // the JSON it prints are what is checked.
+    final rows = await WindowsAppSource().read(days: 2);
+    for (final r in rows) {
+      expect(r.day, matches(RegExp(r'^\d{4}-\d{2}-\d{2}$')));
+      expect(r.app, isNotEmpty);
+      expect(['wifi', 'ethernet', 'mobile'], contains(r.kind));
+    }
+    // ignore: avoid_print
+    print('${rows.length} rows: ${rows.take(5).map((r) => '${r.name} ${r.rx}').join(', ')}');
+  }, timeout: const Timeout(Duration(minutes: 3)));
 }

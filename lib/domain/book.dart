@@ -4,6 +4,7 @@ import 'package:brahma_core/brahma_core.dart';
 import 'package:drift/drift.dart';
 
 import '../db/database.dart';
+import 'app_sources.dart';
 
 /// Synced preferences. The prefs table is shared by every Brahma app, so
 /// Bahya Nireekshana's keys start with its id.
@@ -126,17 +127,80 @@ class NetBook {
   Future<List<DayUsage>> usageSince(String from) =>
       (db.select(db.nirDays)..where((d) => d.deleted.not() & d.day.isBiggerOrEqualValue(from))).get();
 
-  /// Forgets a device's usage on this account (an old phone, say).
+  /// Forgets a device's usage on this account (an old phone, say), its
+  /// apps' usage included.
   Future<void> forgetDevice(String deviceId) async {
-    final rows = await (db.select(
+    final days = await (db.select(
       db.nirDays,
     )..where((d) => d.device.equals(deviceId) & d.deleted.not())).get();
+    final apps = await (db.select(
+      db.nirApps,
+    )..where((a) => a.device.equals(deviceId) & a.deleted.not())).get();
     await db.transaction(() async {
-      for (final r in rows) {
+      for (final r in days) {
         await store.remove(db.nirDays, r.id);
+      }
+      for (final r in apps) {
+        await store.remove(db.nirApps, r.id);
       }
     });
   }
+
+  // ---- usage per app ----
+
+  /// Writes this device's per-app totals from the system's record. Only
+  /// rows that changed are written, so a repeated import sends nothing to
+  /// sync. Returns how many changed.
+  Future<int> importApps(List<AppCount> counts) async {
+    if (counts.isEmpty) return 0;
+    final days = counts.map((c) => c.day).toSet();
+    final from = days.reduce((a, b) => a.compareTo(b) < 0 ? a : b);
+    final had = {
+      for (final r in await (db.select(
+        db.nirApps,
+      )..where((a) => a.device.equals(device) & a.day.isBiggerOrEqualValue(from))).get())
+        r.id: r,
+    };
+    var changed = 0;
+    await db.transaction(() async {
+      for (final c in counts) {
+        final id = '$device|${c.day}|${c.kind}|${c.app}';
+        final old = had[id];
+        if (old != null &&
+            !old.deleted &&
+            old.rx == c.rx &&
+            old.tx == c.tx &&
+            old.fg == c.fg &&
+            old.name == c.name) {
+          continue;
+        }
+        await store.save(
+          db.nirApps,
+          AppUsage(
+            id: id,
+            hlc: '',
+            deleted: false,
+            device: device,
+            deviceName: deviceName,
+            day: c.day,
+            app: c.app,
+            name: c.name,
+            kind: c.kind,
+            rx: c.rx,
+            tx: c.tx,
+            fg: c.fg,
+          ),
+          id,
+        );
+        changed++;
+      }
+    });
+    return changed;
+  }
+
+  /// Every device's per-app rows from [from] on (inclusive).
+  Future<List<AppUsage>> appsSince(String from) =>
+      (db.select(db.nirApps)..where((a) => a.deleted.not() & a.day.isBiggerOrEqualValue(from))).get();
 
   // ---- plans ----
 

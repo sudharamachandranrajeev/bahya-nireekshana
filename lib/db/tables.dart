@@ -27,6 +27,30 @@ class NirDays extends Table with SyncedRow {
   TextColumn get source => text().withDefault(const Constant('recorder'))();
 }
 
+/// Data one program moved on one device on one day over one kind of
+/// network, from the system's per-app record (see lib/domain/apps.dart).
+@DataClassName('AppUsage')
+class NirApps extends Table with SyncedRow {
+  TextColumn get device => text()();
+  TextColumn get deviceName => text().withDefault(const Constant(''))();
+  TextColumn get day => text()();
+
+  /// What the system knows the program by: an Android package name, a
+  /// program's path on Linux, a Windows attribution id, or `uid:<n>` and
+  /// the like for traffic no single app owns.
+  TextColumn get app => text()();
+  TextColumn get name => text()();
+
+  /// wifi | ethernet | mobile | other
+  TextColumn get kind => text()();
+  IntColumn get rx => integer().withDefault(const Constant(0))();
+  IntColumn get tx => integer().withDefault(const Constant(0))();
+
+  /// Bytes (both ways) moved while the app was on screen; null where the
+  /// system does not say (only Android does).
+  IntColumn get fg => integer().nullable()();
+}
+
 /// A data allowance to watch, e.g. 30 GB of mobile data a month.
 @DataClassName('DataPlan')
 class NirPlans extends Table with SyncedRow {

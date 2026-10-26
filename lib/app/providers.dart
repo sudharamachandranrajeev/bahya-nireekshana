@@ -8,6 +8,8 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:http/http.dart' as http;
 
 import '../db/database.dart';
+import '../domain/app_sources.dart';
+import '../domain/app_stats.dart';
 import '../domain/book.dart';
 import '../domain/connections.dart';
 import '../domain/firewall.dart';
@@ -31,6 +33,9 @@ final probeProvider = Provider<NetProbe?>((ref) => NetProbe.forPlatform());
 
 /// This device's system record of past usage (vnstat, Android's statistics).
 final usageSourceProvider = Provider<UsageSource?>((ref) => UsageSource.forPlatform());
+
+/// This device's system record of each app's usage; null where there is none.
+final appSourceProvider = Provider<AppSource?>((ref) => AppSource.forPlatform());
 
 /// The OpenSnitch firewall; only Linux has it.
 final firewallProvider = Provider<Firewall?>((ref) => Platform.isLinux ? const Firewall() : null);
@@ -213,6 +218,45 @@ final allUsageProvider = FutureProvider<UsageIndex>(
 final summaryProvider = FutureProvider<UsageSummary>(
   (ref) async => UsageSummary(await ref.watch(allUsageProvider.future), ref.watch(todayProvider)),
 );
+
+// ---- usage per app ----
+
+/// Every device's per-app rows, back far enough for this month against
+/// last and 30 days against the 30 before.
+final appRowsProvider = FutureProvider<List<AppUsage>>((ref) {
+  ref.watch(revisionProvider);
+  final today = ref.watch(todayProvider);
+  final a = addDays(today, -59);
+  final b = monthStart(addMonths(today, -1));
+  return ref.watch(sessionProvider).book.appsSince(a.compareTo(b) < 0 ? a : b);
+});
+
+/// The Apps page's period and its choice of devices and kinds of network.
+class AppsView {
+  const AppsView({this.period = AppPeriod.week, this.filter = const UsageFilter()});
+  final AppPeriod period;
+  final UsageFilter filter;
+
+  AppsView copyWith({AppPeriod? period, UsageFilter? filter}) =>
+      AppsView(period: period ?? this.period, filter: filter ?? this.filter);
+}
+
+class AppsViewState extends Notifier<AppsView> {
+  @override
+  AppsView build() => const AppsView();
+  void set(AppsView v) => state = v;
+}
+
+final appsViewProvider = NotifierProvider<AppsViewState, AppsView>(AppsViewState.new);
+
+final appsReportProvider = FutureProvider<AppsReport>((ref) async {
+  final view = ref.watch(appsViewProvider);
+  return AppsReport(
+    await ref.watch(appRowsProvider.future),
+    range: periodRange(view.period, ref.watch(todayProvider)),
+    filter: view.filter,
+  );
+});
 
 final plansProvider = FutureProvider<List<DataPlan>>((ref) {
   ref.watch(revisionProvider);
