@@ -4,8 +4,8 @@ import qs.Ui
 import "Model.js" as Model
 
 // "Allowed & blocked" page of the network panel: every saved OpenSnitch answer
-// and netwatch list entry, with filters, search, and block/allow/remove.
-// Changes run netwatch-rules through pkexec; data comes from the owning Panel.
+// and Bahya Nireekshana list entry, with filters, search, and block/allow/remove.
+// Changes run nireekshana-rules through pkexec; data comes from the owning Panel.
 Column {
   id: root
 
@@ -224,7 +224,7 @@ Column {
     width: parent.width
     visible: !root.panel.rules.ok
     text: !root.panel.rulesLoaded ? "Reading rules…"
-      : !root.panel.status.helper ? "Managing rules here needs the netwatch rules manager. Run the setup script again to add it."
+      : !root.panel.status.helper ? "Managing rules here needs the Bahya Nireekshana rules manager. Run the setup script again to add it."
       : "No rules summary yet. It's written when the rules manager starts; try the setup script again if this stays."
     actionText: root.panel.rulesLoaded ? "Set up" : ""
     onActivated: root.panel.runSetup()

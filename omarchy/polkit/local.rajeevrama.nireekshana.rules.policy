@@ -2,7 +2,7 @@
 <!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
  "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
 <policyconfig>
-  <action id="local.rajeevrama.netwatch.rules">
+  <action id="local.rajeevrama.nireekshana.rules">
     <description>Change which apps and sites may use the network</description>
     <message>Authentication is required to change your network allow and block rules</message>
     <icon_name>security-high</icon_name>
@@ -12,6 +12,6 @@
       <!-- Ask once, then allow further changes for a few minutes. -->
       <allow_active>auth_admin_keep</allow_active>
     </defaults>
-    <annotate key="org.freedesktop.policykit.exec.path">/usr/local/bin/netwatch-rules</annotate>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/local/bin/nireekshana-rules</annotate>
   </action>
 </policyconfig>

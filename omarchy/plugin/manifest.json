@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "id": "rajeevrama.netwatch",
-  "name": "Network usage",
+  "id": "rajeevrama.nireekshana",
+  "name": "Bahya Nireekshana",
   "version": "1.0.0",
   "author": "rajeevrama",
   "description": "Live upload/download speed in the bar, with a panel of daily, weekly and monthly usage per connection (vnstat), live per-app usage (nethogs), and OpenSnitch firewall status, blocklists and allowlist",
@@ -16,6 +16,7 @@
     "description": "Live transfer speed with usage history and firewall status",
     "category": "System",
     "aliases": [
+      "nireekshana",
       "netwatch",
       "bandwidth",
       "traffic",

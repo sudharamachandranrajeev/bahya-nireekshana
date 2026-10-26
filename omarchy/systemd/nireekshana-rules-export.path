@@ -1,0 +1,13 @@
+[Unit]
+Description=Refresh the nireekshana rules export when OpenSnitch rules or lists change
+
+[Path]
+PathChanged=/etc/opensnitchd/rules
+PathChanged=/etc/opensnitchd/nireekshana/block-domains
+PathChanged=/etc/opensnitchd/nireekshana/block-nets
+PathChanged=/etc/opensnitchd/nireekshana/allow-domains
+PathChanged=/etc/opensnitchd/nireekshana/allow-nets
+Unit=nireekshana-rules-export.service
+
+[Install]
+WantedBy=paths.target

@@ -11,16 +11,16 @@ import "Model.js" as Model
 // blocked" page to review and change what may use the network.
 //
 // Everything here runs unprivileged: speeds come from /proc/net/dev, history
-// from `vnstat --json`, rules from the summary netwatch-rules exports. Rule
+// from `vnstat --json`, rules from the summary nireekshana-rules exports. Rule
 // changes go through pkexec (Omarchy's polkit prompt); nethogs opens a
 // terminal for sudo.
 Panel {
   id: root
-  moduleName: "rajeevrama.netwatch"
-  ipcTarget: "rajeevrama.netwatch"
+  moduleName: "rajeevrama.nireekshana"
+  ipcTarget: "rajeevrama.nireekshana"
 
   readonly property string home: Quickshell.env("HOME")
-  readonly property string installScript: home + "/Work/netwatch/install.sh"
+  readonly property string installScript: home + "/Work/bahya-nireekshana/omarchy/install.sh"
   readonly property string labelMode: setting("label", "active")
   readonly property string interfaceSetting: setting("interfaces", "")
   readonly property bool firewallBadge: setting("firewallBadge", true) !== false
@@ -131,7 +131,7 @@ Panel {
 
   function applyHistory(raw) {
     var text = String(raw || "")
-    if (text.indexOf("NETWATCH_NO_VNSTAT") === 0) {
+    if (text.indexOf("NIREEKSHANA_NO_VNSTAT") === 0) {
       vnstatState = "missing"
       return
     }
@@ -201,14 +201,14 @@ Panel {
     else ruleCursor = Math.max(0, Math.min(ruleRows.length - 1, ruleCursor + delta))
   }
 
-  // Runs netwatch-rules through pkexec; Omarchy's polkit agent asks for the
+  // Runs nireekshana-rules through pkexec; Omarchy's polkit agent asks for the
   // password (then remembers it for a few minutes).
   function runHelper(id, args, doneText) {
     if (helperProc.running) return
     busyId = id
     ruleNotice = { ok: true, text: "Waiting for authentication…" }
     helperProc.doneText = doneText
-    helperProc.command = ["sh", "-c", "pkexec \"$0\" \"$@\" 2>&1; echo \"NETWATCH_EXIT=$?\"", Model.RULES_HELPER].concat(args)
+    helperProc.command = ["sh", "-c", "pkexec \"$0\" \"$@\" 2>&1; echo \"NIREEKSHANA_EXIT=$?\"", Model.RULES_HELPER].concat(args)
     helperProc.running = true
   }
 
@@ -291,7 +291,7 @@ Panel {
   Process {
     id: vnstatProc
     command: ["sh", "-c",
-      "command -v vnstat >/dev/null || { echo NETWATCH_NO_VNSTAT; exit 0; };"
+      "command -v vnstat >/dev/null || { echo NIREEKSHANA_NO_VNSTAT; exit 0; };"
       + " vnstat --json d 62 2>/dev/null; printf '\\036'; vnstat --json m 13 2>/dev/null; exit 0"]
     stdout: StdioCollector { waitForEnd: true; onStreamFinished: root.applyHistory(text) }
   }
@@ -306,14 +306,14 @@ Panel {
       + " echo opensnitchd=$(systemctl is-active opensnitchd.service);"
       + " pgrep -x opensnitch-ui >/dev/null && echo ui=1;"
       + " r=/etc/opensnitchd/rules; [ -r $r ] && [ -x $r ] &&"
-      + " echo rules=$(ls $r/*.json 2>/dev/null | grep -vc '/00[0-2]-netwatch-');"
+      + " echo rules=$(ls $r/*.json 2>/dev/null | grep -vc '/00[0-2]-nireekshana-');"
       + " [ -x " + Model.RULES_HELPER + " ] && echo helper=1; exit 0"]
     stdout: StdioCollector { waitForEnd: true; onStreamFinished: root.status = Model.parseStatus(text) }
   }
 
   Process {
     id: rulesProc
-    command: ["sh", "-c", "cat " + Model.RULES_EXPORT + " 2>/dev/null || echo NETWATCH_NO_EXPORT"]
+    command: ["sh", "-c", "cat " + Model.RULES_EXPORT + " 2>/dev/null || echo NIREEKSHANA_NO_EXPORT"]
     stdout: StdioCollector {
       waitForEnd: true
       onStreamFinished: {

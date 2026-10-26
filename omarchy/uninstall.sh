@@ -15,6 +15,11 @@ user=${SUDO_USER:-}
 purge=0
 [[ ${1:-} == --purge ]] && purge=1
 
+systemctl disable --now nireekshana-rules-export.path nireekshana-rules-export.service 2>/dev/null || true
+rm -f /etc/systemd/system/nireekshana-rules-export.service /etc/systemd/system/nireekshana-rules-export.path \
+  /usr/local/bin/nireekshana-rules /usr/share/polkit-1/actions/local.rajeevrama.nireekshana.rules.policy
+rm -rf /run/nireekshana
+# Leftovers from when this was called netwatch.
 systemctl disable --now netwatch-rules-export.path netwatch-rules-export.service 2>/dev/null || true
 rm -f /etc/systemd/system/netwatch-rules-export.service /etc/systemd/system/netwatch-rules-export.path \
   /usr/local/bin/netwatch-rules /usr/share/polkit-1/actions/local.rajeevrama.netwatch.rules.policy
@@ -22,10 +27,12 @@ rm -rf /run/netwatch
 systemctl daemon-reload
 echo "Removed the widget's rules manager."
 
-rm -f /etc/opensnitchd/rules/000-netwatch-*.json /etc/opensnitchd/rules/001-netwatch-*.json \
-  /etc/opensnitchd/rules/002-netwatch-*.json
+rm -f /etc/opensnitchd/rules/000-nireekshana-*.json /etc/opensnitchd/rules/001-nireekshana-*.json \
+  /etc/opensnitchd/rules/002-nireekshana-*.json
+rm -rf /etc/opensnitchd/nireekshana
+rm -f /etc/opensnitchd/rules/00[0-2]-netwatch-*.json
 rm -rf /etc/opensnitchd/netwatch
-echo "Removed netwatch's OpenSnitch rules and lists (rules you made in OpenSnitch are untouched)."
+echo "Removed Bahya Nireekshana's OpenSnitch rules and lists (rules you made in OpenSnitch are untouched)."
 
 if [[ -n $user && $user != root ]]; then
   home=$(getent passwd "$user" | cut -d: -f6)

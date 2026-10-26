@@ -27,9 +27,9 @@ var GLYPH_ADDRESS = "\u{F0A60}"    // md-ip_network
 var GLYPH_SYSTEM = "\u{F0493}"     // md-cog
 
 // Written by install.sh: the root helper the widget runs through pkexec, and
-// the summary of OpenSnitch rules + netwatch lists it keeps up to date.
-var RULES_HELPER = "/usr/local/bin/netwatch-rules"
-var RULES_EXPORT = "/run/netwatch/rules.json"
+// the summary of OpenSnitch rules + Bahya Nireekshana lists it keeps up to date.
+var RULES_HELPER = "/usr/local/bin/nireekshana-rules"
+var RULES_EXPORT = "/run/nireekshana/rules.json"
 
 // A transfer counts as "active" above this many bytes per second, both ways.
 var ACTIVE_RATE = 20 * 1000
@@ -387,7 +387,7 @@ function parseStatus(text) {
 function firewallState(status) {
   if (!status || status.opensnitch === "missing")
     return { level: "missing", glyph: GLYPH_SHIELD_OFF, title: "Firewall not installed",
-      detail: "Run ~/Work/netwatch/install.sh to add OpenSnitch" }
+      detail: "Run ~/Work/bahya-nireekshana/omarchy/install.sh to add OpenSnitch" }
   if (status.opensnitch !== "active")
     return { level: "off", glyph: GLYPH_SHIELD_OFF, title: "Firewall stopped",
       detail: "opensnitchd is " + status.opensnitch + " — new connections aren't checked" }
@@ -417,7 +417,7 @@ function barLabel(rate, mode, active) {
 
 // ---------- Allowed & blocked ----------
 
-// netwatch's lists: who they apply to, and where "the other way" lives.
+// Bahya Nireekshana's lists: who they apply to, and where "the other way" lives.
 var LIST_META = {
   "block-domains": { kind: "site", action: "block", opposite: "allow-domains" },
   "allow-domains": { kind: "site", action: "allow", opposite: "block-domains" },
@@ -430,7 +430,7 @@ var SECTIONS = [
   { kind: "site", title: "SITES" },
   { kind: "address", title: "IP ADDRESSES & NETWORKS" },
   { kind: "other", title: "OTHER RULES" },
-  { kind: "system", title: "SYSTEM SERVICES · SET UP BY NETWATCH" }
+  { kind: "system", title: "SYSTEM SERVICES · SET UP BY BAHYA NIREEKSHANA" }
 ]
 
 function basename(path) {
@@ -462,7 +462,7 @@ function ruleItem(rule) {
     else if (c.operand === "protocol") others.push(data.toUpperCase())
     else if (c.operand) others.push(c.operand + (data ? " " + data : ""))
   }
-  var system = /^002-netwatch-/.test(rule.file || "")
+  var system = /^002-nireekshana-/.test(rule.file || "")
   var title = app || dests.join(", ") || others.join(" · ") || rule.name || rule.file
   var detail = []
   if (rule.enabled === false) detail.push("off")
@@ -495,10 +495,10 @@ function listItem(listId, entry) {
   }
 }
 
-// The export written by netwatch-rules, or a marker when it's missing.
+// The export written by nireekshana-rules, or a marker when it's missing.
 function parseRules(text) {
   var raw = String(text || "").trim()
-  if (raw === "" || raw.indexOf("NETWATCH_NO_EXPORT") === 0) return { ok: false, items: [] }
+  if (raw === "" || raw.indexOf("NIREEKSHANA_NO_EXPORT") === 0) return { ok: false, items: [] }
   var data
   try {
     data = JSON.parse(raw)
@@ -509,7 +509,7 @@ function parseRules(text) {
   var rules = data.rules || []
   for (var i = 0; i < rules.length; i++) {
     // 000/001 rules are the lists themselves; their entries are listed below.
-    if (rules[i].error || /^00[01]-netwatch-/.test(rules[i].file || "")) continue
+    if (rules[i].error || /^00[01]-nireekshana-/.test(rules[i].file || "")) continue
     items.push(ruleItem(rules[i]))
   }
   var lists = data.lists || {}
@@ -567,7 +567,7 @@ function itemGlyph(item) {
   return GLYPH_RULES
 }
 
-// netwatch-rules arguments that turn an allowed row into a blocked one or back.
+// nireekshana-rules arguments that turn an allowed row into a blocked one or back.
 function flipArgs(item) {
   if (item.source === "rule") return ["set-action", item.file, item.action === "allow" ? "deny" : "allow"]
   return ["list-add", LIST_META[item.list].opposite, item.title]
@@ -620,9 +620,9 @@ function helperOutcome(exitCode, output) {
   return { ok: false, text: text ? text.split("\n").pop() : "Couldn't save the change (exit " + exitCode + ")" }
 }
 
-// Splits "…output…\nNETWATCH_EXIT=<code>" from the helper wrapper.
+// Splits "…output…\nNIREEKSHANA_EXIT=<code>" from the helper wrapper.
 function parseHelperRun(text) {
   var raw = String(text || "")
-  var m = /NETWATCH_EXIT=(\d+)\s*$/.exec(raw)
+  var m = /NIREEKSHANA_EXIT=(\d+)\s*$/.exec(raw)
   return { exitCode: m ? Number(m[1]) : 1, output: m ? raw.slice(0, m.index) : raw }
 }

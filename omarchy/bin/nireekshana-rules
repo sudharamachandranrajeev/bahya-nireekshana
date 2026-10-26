@@ -1,14 +1,14 @@
 #!/usr/bin/python3 -I
-"""Read and change the OpenSnitch rules and lists shown by the netwatch widget.
+"""Read and change the OpenSnitch rules and lists shown by the Bahya Nireekshana widget.
 
 Runs as root: from the widget through pkexec (Omarchy's polkit prompt asks for
-your password), and from netwatch-rules-export.path whenever rules change.
+your password), and from nireekshana-rules-export.path whenever rules change.
 
-  netwatch-rules export                      write /run/netwatch/rules.json for the widget
-  netwatch-rules set-action <rule.json> allow|deny
-  netwatch-rules delete <rule.json>
-  netwatch-rules list-add <list> <entry>     list: block-domains block-nets allow-domains allow-nets
-  netwatch-rules list-remove <list> <entry>
+  nireekshana-rules export                      write /run/nireekshana/rules.json for the widget
+  nireekshana-rules set-action <rule.json> allow|deny
+  nireekshana-rules delete <rule.json>
+  nireekshana-rules list-add <list> <entry>     list: block-domains block-nets allow-domains allow-nets
+  nireekshana-rules list-remove <list> <entry>
 
 OpenSnitch saves its rules readable by root only, so the widget reads the
 export instead. Every change re-exports, so the widget sees it at once.
@@ -23,8 +23,8 @@ import sys
 from datetime import datetime, timezone
 
 RULES = "/etc/opensnitchd/rules"
-LISTS = "/etc/opensnitchd/netwatch"
-EXPORT = "/run/netwatch/rules.json"
+LISTS = "/etc/opensnitchd/nireekshana"
+EXPORT = "/run/nireekshana/rules.json"
 EXPORT_GROUP = "wheel"
 
 # list id -> kind of entry it holds
@@ -41,7 +41,7 @@ OPPOSITE = {
     "allow-nets": "block-nets",
 }
 # The rules that read the lists; change the lists, not these.
-PROTECTED = re.compile(r"^00[01]-netwatch-")
+PROTECTED = re.compile(r"^00[01]-nireekshana-")
 ACTION_PREFIX = re.compile(r"^(allow|deny|reject)-")
 DOMAIN = re.compile(
     r"^(?=.{1,253}$)(?:[a-z0-9_](?:[a-z0-9_-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$"
@@ -70,7 +70,7 @@ def rule_path(name):
     if "/" in name or name.startswith(".") or not name.endswith(".json"):
         raise Refused(f"not a rule file name: {name!r}")
     if PROTECTED.match(name):
-        raise Refused(f"{name} holds a netwatch list; change the list entries instead")
+        raise Refused(f"{name} holds a nireekshana list; change the list entries instead")
     path = os.path.join(RULES, name)
     if os.path.islink(path) or not os.path.isfile(path):
         raise Refused(f"no such rule: {name}")
@@ -116,7 +116,7 @@ def list_path(list_id):
         raise Refused(f"unknown list: {list_id!r}")
     path = os.path.join(LISTS, list_id, "list.txt")
     if os.path.islink(path) or not os.path.isfile(path):
-        raise Refused(f"{path} is missing; re-run ~/Work/netwatch/install.sh")
+        raise Refused(f"{path} is missing; re-run ~/Work/bahya-nireekshana/omarchy/install.sh")
     return path
 
 
@@ -255,7 +255,7 @@ def main(argv):
         print(__doc__.strip(), file=sys.stderr)
         return 2
     if os.geteuid() != 0:
-        print("netwatch-rules must run as root (the widget uses pkexec)", file=sys.stderr)
+        print("nireekshana-rules must run as root (the widget uses pkexec)", file=sys.stderr)
         return 1
     func, _ = COMMANDS[argv[0]]
     try:

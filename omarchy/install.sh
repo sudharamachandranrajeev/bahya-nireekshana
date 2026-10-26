@@ -1,30 +1,35 @@
 #!/bin/bash
 #
-# System side of the network widget (rajeevrama.netwatch):
+# System side of Bahya Nireekshana's bar widget (rajeevrama.nireekshana):
 #
 #   vnstat      per-connection traffic history (day / week / month)
 #   OpenSnitch  per-app firewall: asks before an unknown app connects, keeps
-#               allow/deny rules, and enforces the netwatch blocklists
+#               allow/deny rules, and enforces the Bahya Nireekshana blocklists
 #   nethogs     live per-app usage (opened from the widget in a terminal)
 #
 # Usage: sudo ./install.sh          install / repair (safe to re-run)
 #        ./install.sh --check       show what's installed, change nothing
 #
 # Files this script owns (removed by uninstall.sh):
-#   /etc/opensnitchd/netwatch/                      blocklist / allowlist files
-#   /etc/opensnitchd/rules/00[0-2]-netwatch-*.json  rules that use them
-#   /usr/local/bin/netwatch-rules                   lets the widget list and change rules
-#   /usr/share/polkit-1/actions/local.rajeevrama.netwatch.rules.policy
-#   /etc/systemd/system/netwatch-rules-export.{service,path}
-#   ~/.config/autostart/opensnitch_ui.desktop       starts the prompt window at login
+#   /etc/opensnitchd/nireekshana/                         blocklist / allowlist files
+#   /etc/opensnitchd/rules/00[0-2]-nireekshana-*.json     rules that use them
+#   /usr/local/bin/nireekshana-rules                      lets the widget list and change rules
+#   /usr/share/polkit-1/actions/local.rajeevrama.nireekshana.rules.policy
+#   /etc/systemd/system/nireekshana-rules-export.{service,path}
+#   ~/.config/autostart/opensnitch_ui.desktop             starts the prompt window at login
+#
+# The project was called netwatch before. A machine set up under that name is
+# moved over: its lists are kept, its rules, helper and units are replaced.
+# The bar widget itself is installed by install-plugin.sh, without sudo.
 
 set -euo pipefail
 
 PACKAGES=(vnstat nethogs opensnitch)
-LISTS=/etc/opensnitchd/netwatch
+LISTS=/etc/opensnitchd/nireekshana
 RULES=/etc/opensnitchd/rules
+OLD_LISTS=/etc/opensnitchd/netwatch
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-POLICY=/usr/share/polkit-1/actions/local.rajeevrama.netwatch.rules.policy
+POLICY=/usr/share/polkit-1/actions/local.rajeevrama.nireekshana.rules.policy
 
 # System services that need the network before you can answer a prompt.
 CORE_APPS=(
@@ -46,8 +51,9 @@ check() {
   done
   if pgrep -x opensnitch-ui >/dev/null; then note "OpenSnitch window: running"; else note "OpenSnitch window: not running"; fi
   if [[ -d $LISTS ]]; then note "lists: $LISTS"; else note "lists: not set up"; fi
-  if [[ -x /usr/local/bin/netwatch-rules && -f $POLICY ]]; then note "rules manager: installed"; else note "rules manager: not installed"; fi
-  note "netwatch-rules-export.path: $(systemctl is-active netwatch-rules-export.path 2>/dev/null || true)"
+  if [[ -x /usr/local/bin/nireekshana-rules && -f $POLICY ]]; then note "rules manager: installed"; else note "rules manager: not installed"; fi
+  note "nireekshana-rules-export.path: $(systemctl is-active nireekshana-rules-export.path 2>/dev/null || true)"
+  if [[ -e /usr/local/bin/netwatch-rules || -d $OLD_LISTS ]]; then note "old netwatch setup: still there (run with sudo to move it over)"; fi
 }
 
 if [[ ${1:-} == --check ]]; then
@@ -85,6 +91,12 @@ note "History starts now; the widget shows numbers after vnstat's first 5-minute
 # ---------- OpenSnitch lists and rules ----------
 
 say "Setting up OpenSnitch blocklists and rules"
+# Copied, not moved: the old netwatch rules keep reading their lists until the
+# renamed rules below are in place.
+if [[ -d $OLD_LISTS && ! -e $LISTS ]]; then
+  cp -a "$OLD_LISTS" "$LISTS"
+  note "copied your netwatch lists to $LISTS"
+fi
 install -d -m 755 "$LISTS/block-domains" "$LISTS/block-nets" "$LISTS/allow-domains" "$LISTS/allow-nets"
 # Leave OpenSnitch's own directory permissions alone if it already exists.
 [[ -d $RULES ]] || install -d -m 755 "$RULES"
@@ -147,7 +159,7 @@ list_rule() {
   "created": "$now",
   "updated": "$now",
   "name": "$name",
-  "description": "$description (managed by netwatch)",
+  "description": "$description (managed by Bahya Nireekshana)",
   "enabled": true,
   "precedence": true,
   "action": "$action",
@@ -163,20 +175,20 @@ list_rule() {
 EOF
 }
 
-list_rule 000-netwatch-block-domains reject lists.domains "$LISTS/block-domains" "Blocked domains"
-list_rule 000-netwatch-block-nets reject lists.nets "$LISTS/block-nets" "Blocked IPs and networks"
-list_rule 001-netwatch-allow-domains allow lists.domains "$LISTS/allow-domains" "Always-allowed domains"
-list_rule 001-netwatch-allow-nets allow lists.nets "$LISTS/allow-nets" "Always-allowed IPs and networks"
+list_rule 000-nireekshana-block-domains reject lists.domains "$LISTS/block-domains" "Blocked domains"
+list_rule 000-nireekshana-block-nets reject lists.nets "$LISTS/block-nets" "Blocked IPs and networks"
+list_rule 001-nireekshana-allow-domains allow lists.domains "$LISTS/allow-domains" "Always-allowed domains"
+list_rule 001-nireekshana-allow-nets allow lists.nets "$LISTS/allow-nets" "Always-allowed IPs and networks"
 
 for app in "${CORE_APPS[@]}"; do
   [[ -x $app ]] || continue
-  name="002-netwatch-allow-$(basename "$app" | tr '[:upper:]' '[:lower:]')"
+  name="002-nireekshana-allow-$(basename "$app" | tr '[:upper:]' '[:lower:]')"
   write_once "$RULES/$name.json" <<EOF
 {
   "created": "$now",
   "updated": "$now",
   "name": "$name",
-  "description": "Core system service (managed by netwatch)",
+  "description": "Core system service (managed by Bahya Nireekshana)",
   "enabled": true,
   "precedence": false,
   "action": "allow",
@@ -192,6 +204,17 @@ for app in "${CORE_APPS[@]}"; do
 EOF
 done
 
+# The renamed rules now enforce the lists, so the netwatch ones can go.
+for old in "$RULES"/00[0-2]-netwatch-*.json; do
+  [[ -e $old ]] || continue
+  rm -f "$old"
+  note "removed $old"
+done
+if [[ -d $OLD_LISTS ]]; then
+  rm -rf "$OLD_LISTS"
+  note "removed $OLD_LISTS"
+fi
+
 say "Starting OpenSnitch (firewall)"
 systemctl enable --now opensnitchd.service
 default_action=$(sed -n 's/.*"DefaultAction"[[:space:]]*:[[:space:]]*"\([a-z]*\)".*/\1/p' /etc/opensnitchd/default-config.json 2>/dev/null | head -n1 || true)
@@ -203,14 +226,20 @@ note "When the prompt window isn't running, unknown connections get: ${default_a
 # summary the widget can read (refreshed whenever rules or lists change), and
 # makes the changes you ask for in the widget, after Omarchy's polkit prompt.
 say "Installing the rules manager used by the widget"
-install -m 755 "$HERE/bin/netwatch-rules" /usr/local/bin/netwatch-rules
-install -m 644 "$HERE/polkit/local.rajeevrama.netwatch.rules.policy" "$POLICY"
-install -m 644 "$HERE/systemd/netwatch-rules-export.service" "$HERE/systemd/netwatch-rules-export.path" /etc/systemd/system/
+if [[ -e /etc/systemd/system/netwatch-rules-export.path ]]; then
+  systemctl disable --now netwatch-rules-export.path netwatch-rules-export.service 2>/dev/null || true
+  rm -f /etc/systemd/system/netwatch-rules-export.service /etc/systemd/system/netwatch-rules-export.path
+fi
+rm -f /usr/local/bin/netwatch-rules /usr/share/polkit-1/actions/local.rajeevrama.netwatch.rules.policy
+rm -rf /run/netwatch
+install -m 755 "$HERE/bin/nireekshana-rules" /usr/local/bin/nireekshana-rules
+install -m 644 "$HERE/polkit/local.rajeevrama.nireekshana.rules.policy" "$POLICY"
+install -m 644 "$HERE/systemd/nireekshana-rules-export.service" "$HERE/systemd/nireekshana-rules-export.path" /etc/systemd/system/
 systemctl daemon-reload
-systemctl enable --now netwatch-rules-export.path
-systemctl enable netwatch-rules-export.service
-systemctl start netwatch-rules-export.service
-note "rules summary: /run/netwatch/rules.json"
+systemctl enable --now nireekshana-rules-export.path
+systemctl enable nireekshana-rules-export.service
+systemctl start nireekshana-rules-export.service
+note "rules summary: /run/nireekshana/rules.json"
 
 # ---------- prompt window at login ----------
 

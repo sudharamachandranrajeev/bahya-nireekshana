@@ -1,5 +1,5 @@
-"""Tests for bin/netwatch-rules, run unprivileged against temp directories:
-python3 -I -m unittest discover -s ~/Work/netwatch/tests
+"""Tests for bin/nireekshana-rules, run unprivileged against temp directories:
+python3 -I -m unittest discover -s ~/Work/bahya-nireekshana/omarchy/tests
 """
 
 import importlib.machinery
@@ -9,12 +9,12 @@ import os
 import tempfile
 import unittest
 
-HELPER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "bin", "netwatch-rules")
+HELPER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "bin", "nireekshana-rules")
 
 
 def load_helper():
-    loader = importlib.machinery.SourceFileLoader("netwatch_rules", HELPER)
-    spec = importlib.util.spec_from_loader("netwatch_rules", loader)
+    loader = importlib.machinery.SourceFileLoader("nireekshana_rules", HELPER)
+    spec = importlib.util.spec_from_loader("nireekshana_rules", loader)
     module = importlib.util.module_from_spec(spec)
     loader.exec_module(module)
     return module
@@ -36,7 +36,7 @@ class HelperTest(unittest.TestCase):
         self.h.RULES = os.path.join(root, "rules")
         self.h.LISTS = os.path.join(root, "lists")
         self.h.EXPORT = os.path.join(root, "run", "rules.json")
-        self.h.EXPORT_GROUP = "no-such-group-netwatch-test"
+        self.h.EXPORT_GROUP = "no-such-group-nireekshana-test"
         os.makedirs(self.h.RULES)
         for list_id in self.h.LIST_KINDS:
             os.makedirs(os.path.join(self.h.LISTS, list_id))
@@ -80,8 +80,8 @@ class HelperTest(unittest.TestCase):
             self.h.set_action("allow-always-x.json", "deny")
 
     def test_rule_names_are_confined(self):
-        self.write_rule(rule("000-netwatch-block-domains"))
-        for bad in ("../x.json", "x", ".hidden.json", "000-netwatch-block-domains.json", "missing.json"):
+        self.write_rule(rule("000-nireekshana-block-domains"))
+        for bad in ("../x.json", "x", ".hidden.json", "000-nireekshana-block-domains.json", "missing.json"):
             with self.assertRaises(self.h.Refused, msg=bad):
                 self.h.delete(bad)
         with self.assertRaises(self.h.Refused):

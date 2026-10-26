@@ -2,10 +2,9 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
 import { readFileSync } from "node:fs"
-import { homedir } from "node:os"
 import vm from "node:vm"
 
-const source = readFileSync(`${homedir()}/.config/omarchy/plugins/rajeevrama.netwatch/Model.js`, "utf8")
+const source = readFileSync(new URL("../plugin/Model.js", import.meta.url), "utf8")
   .replace(/^\.pragma library\s*$/m, "")
 const M = {}
 vm.runInNewContext(source, M)
@@ -203,13 +202,13 @@ test("bar label and compact rates", () => {
   assert.equal(M.nextLabelMode("none"), "active")
 })
 
-// What netwatch-rules export writes (see bin/netwatch-rules).
+// What nireekshana-rules export writes (see bin/nireekshana-rules).
 const EXPORT = JSON.stringify({
   generated: "2026-10-12T02:00:00Z",
   rules: [
-    { file: "000-netwatch-block-domains.json", name: "000-netwatch-block-domains", action: "reject",
-      operator: { type: "lists", operand: "lists.domains", data: "/etc/opensnitchd/netwatch/block-domains" } },
-    { file: "002-netwatch-allow-pacman.json", name: "002-netwatch-allow-pacman", action: "allow", enabled: true,
+    { file: "000-nireekshana-block-domains.json", name: "000-nireekshana-block-domains", action: "reject",
+      operator: { type: "lists", operand: "lists.domains", data: "/etc/opensnitchd/nireekshana/block-domains" } },
+    { file: "002-nireekshana-allow-pacman.json", name: "002-nireekshana-allow-pacman", action: "allow", enabled: true,
       operator: { type: "simple", operand: "process.path", data: "/usr/bin/pacman" } },
     { file: "allow-always-simple-usr-bin-telegram.json", name: "allow-always-simple-usr-bin-telegram",
       action: "allow", enabled: true, operator: { type: "simple", operand: "process.path", data: "/usr/bin/telegram" } },
@@ -229,16 +228,16 @@ const EXPORT = JSON.stringify({
 
 test("parseRules turns rules and list entries into rows", () => {
   eq(M.parseRules(""), { ok: false, items: [] })
-  eq(M.parseRules("NETWATCH_NO_EXPORT"), { ok: false, items: [] })
+  eq(M.parseRules("NIREEKSHANA_NO_EXPORT"), { ok: false, items: [] })
   eq(M.parseRules("{"), { ok: false, items: [] })
 
   const r = M.parseRules(EXPORT)
   assert.equal(r.ok, true)
   const byId = Object.fromEntries(r.items.map(i => [i.id, i]))
   // list-reading rules and unreadable files are left out
-  assert.equal(byId["rule:000-netwatch-block-domains.json"], undefined)
+  assert.equal(byId["rule:000-nireekshana-block-domains.json"], undefined)
   assert.equal(byId["rule:broken.json"], undefined)
-  eq(byId["rule:002-netwatch-allow-pacman.json"].kind, "system")
+  eq(byId["rule:002-nireekshana-allow-pacman.json"].kind, "system")
   const telegram = byId["rule:allow-always-simple-usr-bin-telegram.json"]
   eq([telegram.kind, telegram.action, telegram.title, telegram.detail], ["app", "allow", "telegram", "/usr/bin/telegram"])
   const cliamp = byId["rule:deny-always-simple-usr-bin-cliamp.json"]
@@ -294,8 +293,8 @@ test("classifyEntry gives an immediate hint", () => {
 })
 
 test("helper run results", () => {
-  eq(M.parseHelperRun("NETWATCH_EXIT=0\n"), { exitCode: 0, output: "" })
-  eq(M.parseHelperRun("a rule named x already exists\nNETWATCH_EXIT=3\n"),
+  eq(M.parseHelperRun("NIREEKSHANA_EXIT=0\n"), { exitCode: 0, output: "" })
+  eq(M.parseHelperRun("a rule named x already exists\nNIREEKSHANA_EXIT=3\n"),
     { exitCode: 3, output: "a rule named x already exists\n" })
   eq(M.parseHelperRun("garbage"), { exitCode: 1, output: "garbage" })
   eq(M.helperOutcome(0, ""), { ok: true, text: "" })
