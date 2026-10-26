@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1 (2026-10-26)
+
+- The Windows app builds again with Visual Studio 2026. 0.2.0 was never published because of
+  this; 0.2.1 carries everything listed under it.
+
 ## 0.2.0 (2026-10-26)
 
 - Apps: each app's data use today, over 7 or 30 days or this month, against the period before.

@@ -57,6 +57,11 @@ add_subdirectory("runner")
 # them to the application.
 include(flutter/generated_plugins.cmake)
 
+# local_auth_windows builds C++/WinRT as C++17, which pulls in
+# <experimental/coroutine>; Visual Studio 2026 (MSVC 14.51) rejects that with
+# STL1011 unless told to allow it.
+target_compile_definitions(local_auth_windows_plugin PRIVATE _SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS)
+
 
 # === Installation ===
 # Support files are copied into place next to the executable, so that it can
