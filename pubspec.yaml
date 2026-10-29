@@ -1,7 +1,7 @@
 name: nireekshana
 description: "Bahya Nireekshana - network monitor: live speed, usage history, data plans, connections, firewall, speed tests and usage per app (Linux, Windows, Android). Part of Brahma."
 publish_to: 'none'
-version: 0.2.1+3
+version: 0.3.0+4
 
 environment:
   sdk: ^3.13.5

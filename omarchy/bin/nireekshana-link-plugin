@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+# Links Bahya Nireekshana's prompt explainer into OpenSnitch's plugin folder.
+# OpenSnitch loads plugins only from inside its own Python package, and that
+# folder moves whenever Python's version changes, so install.sh runs this once
+# and a pacman hook runs it again after every OpenSnitch or Python update.
+#
+# Usage: nireekshana-link-plugin            link (or re-link)
+#        nireekshana-link-plugin --remove   unlink
+
+set -euo pipefail
+
+SOURCE=/usr/local/lib/nireekshana/opensnitch/nireekshana
+
+# find_spec locates the package without importing it (and PyQt with it).
+package=$(python3 -I -c 'import importlib.util as u; s = u.find_spec("opensnitch"); print(s.submodule_search_locations[0] if s else "")' 2>/dev/null || true)
+if [[ -z $package || ! -d $package/plugins ]]; then
+  echo "nireekshana-link-plugin: OpenSnitch's window (opensnitch-ui) isn't installed; nothing to link." >&2
+  exit 0
+fi
+link=$package/plugins/nireekshana
+
+if [[ ${1:-} == --remove ]]; then
+  [[ -L $link ]] && rm -f "$link"
+  exit 0
+fi
+
+if [[ -e $link && ! -L $link ]]; then
+  echo "nireekshana-link-plugin: $link exists and isn't our link; leaving it alone." >&2
+  exit 1
+fi
+ln -sfn "$SOURCE" "$link"

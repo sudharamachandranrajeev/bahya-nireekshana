@@ -1,0 +1,13 @@
+# Keeps Bahya Nireekshana's prompt explainer linked into OpenSnitch's plugin
+# folder, which moves when OpenSnitch or Python is updated.
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = opensnitch
+Target = python
+
+[Action]
+Description = Linking the Bahya Nireekshana prompt explainer into OpenSnitch...
+When = PostTransaction
+Exec = /usr/local/bin/nireekshana-link-plugin

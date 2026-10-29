@@ -48,6 +48,9 @@ works day to day, but some pages are Linux-only (see below).
   where.
 - 🛡️ **Firewall** (Linux) – block or allow sites and addresses, and review what the firewall
   ([OpenSnitch](https://github.com/evilsocket/opensnitch)) has allowed or blocked.
+- 💬 **Prompts in plain words** (Linux) – when the firewall asks about a connection, it also says
+  what the program is, what it's for, why it's connecting now, and what allowing or denying will
+  do, with the technical details one tab away.
 - 🌐 **Browser extension** – data used by each website in Chrome, Edge and Firefox, with daily
   budgets and a blocklist.
 - 🔒 **Private by design** – data is encrypted on the device. Sync between your devices is optional,
@@ -65,6 +68,7 @@ works day to day, but some pages are Linux-only (see below).
 | Usage per app | Yes, after the [Omarchy setup](omarchy/README.md) | Yes (Windows 10 and 11) | Yes, with usage access | Per website |
 | Connections | Yes | Yes | No (Android hides them) | – |
 | Firewall | Yes, after the [Omarchy setup](omarchy/README.md) | No | No | Blocklist |
+| Prompts in plain words | Yes, after the [Omarchy setup](omarchy/README.md) | No | No | – |
 | Sync with your other devices | Yes | Yes | Yes | No |
 | In-app updates | Yes | Yes | Yes | No |
 
@@ -95,6 +99,13 @@ works day to day, but some pages are Linux-only (see below).
     <td align="center"><img src="docs/screenshots/app-detail-desktop.png" alt="One app's page on desktop" width="260"><br><sub>One app</sub></td>
     <td align="center"><img src="docs/screenshots/connections-desktop.png" alt="Connections on desktop" width="260"><br><sub>Connections</sub></td>
     <td align="center"><img src="docs/screenshots/themes-desktop.png" alt="Themes on desktop" width="260"><br><sub>Themes (Saffron)</sub></td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/firewall-prompt.png" alt="A firewall prompt with a plain-words verdict" width="380"><br><sub>A firewall prompt, with the verdict</sub></td>
+    <td align="center"><img src="docs/screenshots/firewall-explain.png" alt="The prompt's plain-words explanation" width="380"><br><sub>Explain…: the whole story</sub></td>
   </tr>
 </table>
 
@@ -213,7 +224,10 @@ feeds the app's **Apps** and **Firewall** pages on Linux.
 1. Download the **Source code** zip from the release, or clone this repository, and open a terminal
    in it.
 2. Add the bar widget for your user: `omarchy/install-plugin.sh`
-3. Set up the system side (vnstat, nethogs and OpenSnitch): `sudo omarchy/install.sh`
+3. Set up the system side (vnstat, nethogs, OpenSnitch and the plain-words prompt explainer):
+   `sudo omarchy/install.sh`
+4. When OpenSnitch next asks about a connection, read the coloured line under its question, or
+   click **Explain…** for the whole story.
 
 Clicks, settings and the blocklist files are explained in the [Omarchy guide](omarchy/README.md).
 
@@ -238,6 +252,9 @@ flowchart LR
   the update check on GitHub. You can switch the update check off in **Settings → Updates**.
 - **The browser extension** keeps its numbers in the browser and makes no network requests of
   its own.
+- **The prompt explainer** builds each explanation from what is already on your computer (the
+  running process, the package database, systemd and a built-in list of programs, sites and
+  ports). It sends nothing anywhere.
 
 > [!IMPORTANT]
 > Your sync password and recovery key are the only ways to unlock synced data. If you lose both,
@@ -281,6 +298,15 @@ against `SHA256SUMS.txt` on the release if you want to be sure it is genuine.
 
 The key that unlocks your data lives in the desktop keyring. Make sure your keyring app (GNOME
 Keyring or KWallet) is running and unlocked, then start the app again.
+</details>
+
+<details>
+<summary><b>OpenSnitch prompts don't show the plain-words line</b></summary>
+
+Run `omarchy/install.sh --check`. If it says the prompt explainer isn't installed, run
+`sudo omarchy/install.sh` again. If it is installed, restart the OpenSnitch window (log out and in).
+To switch the explainer off, set `"enabled": false` in
+`~/.config/opensnitch/actions/nireekshana.json`.
 </details>
 
 <details>

@@ -11,6 +11,7 @@ older netwatch setup over to the new names and keeps your lists.)
 | Live usage per app (GUI apps, scripts, CLI tools, system services) | nethogs, opened from the widget in a terminal (`sudo nethogs -C`) |
 | Daily usage per app, for the app's Apps page | `nireekshana-apps.service`: reads nethogs in trace mode and writes `/var/lib/nireekshana/apps.json` |
 | Approval prompts for apps that haven't connected before | OpenSnitch (`opensnitchd.service` + `opensnitch-ui` at login) |
+| Each prompt explained in plain words | The `nireekshana` OpenSnitch plugin (`opensnitch/nireekshana/`) |
 | Blocklist / allowlist | OpenSnitch rules using the list files in `/etc/opensnitchd/nireekshana/` |
 | Reviewing and changing what's allowed or blocked | The widget's **Allowed & blocked** page, via `nireekshana-rules` |
 
@@ -73,6 +74,64 @@ refreshes it whenever rules or lists change.
 Answers given for a limited time (e.g. "until restart") live only inside
 OpenSnitch; see them in the OpenSnitch window.
 
+## Prompts in plain words
+
+`install.sh` adds a plugin to OpenSnitch's prompt window. Under the prompt's own question you get
+a coloured line:
+
+- 🟢 **Looks routine**: a known program, installed by the package manager, doing its usual job.
+- 🟠 **Worth a look**: something is unknown or unusual. For example, no package installed the
+  program, or it runs as root without being a system service.
+- 🔴 **Be careful**: a red flag. For example, the program runs from a temporary folder, its file
+  was deleted after it started, a script runs from a temporary folder, or the port is one that
+  remote-control tools use by default.
+
+**Explain…** opens the whole story. Opening it also stops the countdown. It has two tabs:
+
+- **In plain words**:
+  - **What is it**: a description from Bahya Nireekshana's list, the app's menu entry and the
+    package database.
+  - **What it's for**.
+  - **Who it's talking to**: the site's owner, whether the address is this computer, your own
+    network or the internet, and what the port means.
+  - **Why now**:
+    - a scheduled job (systemd timer)
+    - a background service
+    - started from a terminal or by another app
+    - how long it has been running
+  - **If you allow** and **If you deny**: what happens either way.
+  - **If you don't answer**: what OpenSnitch saves when the countdown runs out.
+  - **Things to notice**: any red flags.
+- **Advanced**:
+  - the program, its command line and the script it runs
+  - process ID and user
+  - how long it has been running
+  - package and version
+  - the systemd unit and what triggered it
+  - the chain of programs that started it
+  - the destination address, its type and the site's owner
+  - protocol, port and checksum
+
+Everything comes from this computer: `/proc`, pacman's database, `systemctl` and
+`opensnitch/nireekshana/known.json`, a list of programs, sites and ports. It makes no network
+requests. Program names, arguments and host names come from the connection and are shown
+escaped, never as live markup.
+
+How it is wired up:
+- OpenSnitch loads plugins only from its own package folder. `install.sh` copies the plugin to
+  `/usr/local/lib/nireekshana/opensnitch/nireekshana/`, and `nireekshana-link-plugin` links it
+  into `…/site-packages/opensnitch/plugins/`.
+- A pacman hook runs the link again after OpenSnitch or Python updates. A new Python version
+  moves the folder.
+- `~/.config/opensnitch/actions/nireekshana.json` switches it on. Set `"enabled": false` there
+  to switch it off.
+
+Try the explanation for a running process from a terminal:
+
+```bash
+python3 omarchy/opensnitch/nireekshana/explain.py <pid> <host-or-ip> <port>
+```
+
 ## Blocklists and allowlist files
 
 The page edits these for you. You can also use `sudoedit`; OpenSnitch reloads
@@ -98,6 +157,10 @@ answered any prompts.
 - `install.sh` / `uninstall.sh` (`--purge` also removes the packages and vnstat history)
 - `bin/nireekshana-rules`: the root helper behind the Allowed & blocked page (installed to `/usr/local/bin`)
 - `systemd/nireekshana-rules-export.{service,path}`, `polkit/local.rajeevrama.nireekshana.rules.policy`
+- `opensnitch/nireekshana/`: the prompt explainer (`nireekshana.py` is the plugin, `explain.py`
+  the logic, `known.json` the list of programs, sites and ports), with `bin/nireekshana-link-plugin`
+  and `pacman/nireekshana-opensnitch-plugin.hook`
 - Tests:
   - `node --test tests/model.test.mjs`: the widget's data logic
-  - `python3 -I -m unittest discover -s tests`: the helper, run unprivileged against temp dirs
+  - `python3 -I -m unittest discover -s tests`: the helpers and the prompt explainer, run
+    unprivileged against temp dirs and fake look-ups

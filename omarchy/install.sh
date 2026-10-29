@@ -19,6 +19,10 @@
 #   /etc/systemd/system/nireekshana-rules-export.{service,path}
 #   /usr/local/bin/nireekshana-apps, /etc/systemd/system/nireekshana-apps.service
 #   /var/lib/nireekshana/apps.json                       daily usage per app
+#   /usr/local/lib/nireekshana/opensnitch/nireekshana/    the prompt explainer (an OpenSnitch plugin),
+#     linked into OpenSnitch's plugin folder by /usr/local/bin/nireekshana-link-plugin
+#   /etc/pacman.d/hooks/nireekshana-opensnitch-plugin.hook  re-links it after updates
+#   ~/.config/opensnitch/actions/nireekshana.json         switches the explainer on
 #   ~/.config/autostart/opensnitch_ui.desktop             starts the prompt window at login
 #
 # The project was called netwatch before. A machine set up under that name is
@@ -33,6 +37,8 @@ RULES=/etc/opensnitchd/rules
 OLD_LISTS=/etc/opensnitchd/netwatch
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 POLICY=/usr/share/polkit-1/actions/local.rajeevrama.nireekshana.rules.policy
+EXPLAINER=/usr/local/lib/nireekshana/opensnitch/nireekshana
+HOOK=/etc/pacman.d/hooks/nireekshana-opensnitch-plugin.hook
 
 # System services that need the network before you can answer a prompt.
 CORE_APPS=(
@@ -57,6 +63,11 @@ check() {
   if [[ -x /usr/local/bin/nireekshana-rules && -f $POLICY ]]; then note "rules manager: installed"; else note "rules manager: not installed"; fi
   note "nireekshana-rules-export.path: $(systemctl is-active nireekshana-rules-export.path 2>/dev/null || true)"
   note "nireekshana-apps.service: $(systemctl is-active nireekshana-apps.service 2>/dev/null || true)"
+  if compgen -G "/usr/lib/python3*/site-packages/opensnitch/plugins/nireekshana/nireekshana.py" >/dev/null; then
+    note "prompt explainer: installed"
+  else
+    note "prompt explainer: not installed"
+  fi
   if [[ -e /usr/local/bin/netwatch-rules || -d $OLD_LISTS ]]; then note "old netwatch setup: still there (run with sudo to move it over)"; fi
 }
 
@@ -253,6 +264,41 @@ systemctl enable nireekshana-apps.service
 systemctl restart nireekshana-apps.service
 note "daily usage per app: /var/lib/nireekshana/apps.json"
 
+# ---------- prompt explainer ----------
+
+# An OpenSnitch plugin that adds a plain-words explanation to every prompt:
+# what the program is, why it's connecting now, and what allowing or denying
+# does. It works only from what is on this computer; it never goes online.
+say "Installing the prompt explainer"
+install -d -m 755 "$EXPLAINER"
+install -m 644 "$HERE/opensnitch/nireekshana/nireekshana.py" "$HERE/opensnitch/nireekshana/explain.py" \
+  "$HERE/opensnitch/nireekshana/known.json" "$EXPLAINER/"
+install -m 755 "$HERE/bin/nireekshana-link-plugin" /usr/local/bin/nireekshana-link-plugin
+install -d -m 755 "$(dirname "$HOOK")"
+install -m 644 "$HERE/pacman/nireekshana-opensnitch-plugin.hook" "$HOOK"
+/usr/local/bin/nireekshana-link-plugin
+note "linked into OpenSnitch's plugin folder (re-linked by $HOOK after updates)"
+# Written once, as you: set "enabled" to false in it to switch the explainer off.
+actions="$home/.config/opensnitch/actions"
+explainer_new=0
+if [[ ! -e $actions/nireekshana.json ]]; then
+  runuser -u "$user" -- mkdir -p "$actions"
+  runuser -u "$user" -- tee "$actions/nireekshana.json" >/dev/null <<'EOF'
+{
+  "name": "nireekshana",
+  "description": "Bahya Nireekshana: explains each prompt in plain words",
+  "type": ["popups"],
+  "actions": {
+    "nireekshana": {"enabled": true}
+  }
+}
+EOF
+  explainer_new=1
+  note "wrote $actions/nireekshana.json"
+else
+  note "kept $actions/nireekshana.json"
+fi
+
 # ---------- prompt window at login ----------
 
 say "Starting the OpenSnitch prompt window at login for $user"
@@ -278,7 +324,16 @@ user_systemctl() {
     DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" systemctl --user "$@"
 }
 if pgrep -u "$user" -x opensnitch-ui >/dev/null; then
-  note "already running"
+  # OpenSnitch reads plugins only when its window starts. A prompt open right
+  # now is lost, and the daemon's default action covers the few seconds' gap.
+  if (( explainer_new )) && user_systemctl --quiet is-active app-opensnitch_ui@autostart.service \
+    && user_systemctl restart app-opensnitch_ui@autostart.service; then
+    note "restarted it to load the prompt explainer"
+  elif (( explainer_new )); then
+    note "already running: restart it (or log out and in) to load the prompt explainer"
+  else
+    note "already running"
+  fi
 elif [[ -S /run/user/$uid/bus ]] && user_systemctl daemon-reload \
   && user_systemctl start app-opensnitch_ui@autostart.service; then
   note "started"
@@ -293,6 +348,8 @@ cat <<EOF
 Next:
   * OpenSnitch now asks the first time each app connects. Choose "always" to
     remember the answer; your choices show up as rules in its window.
+  * Each prompt now says in plain words what is connecting and why. Click
+    "Explain..." in the prompt for the full story and the technical details.
   * Review and change what's allowed or blocked from the widget panel:
     "Allowed & blocked" (asks for your password once every few minutes).
   * Live per-app usage: middle-click the network widget, or run: sudo nethogs -C

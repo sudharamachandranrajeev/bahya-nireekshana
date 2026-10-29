@@ -33,6 +33,11 @@ systemctl daemon-reload
 if (( purge )); then rm -rf /var/lib/nireekshana; fi
 echo "Removed the per-app usage counter (its history in /var/lib/nireekshana stays unless --purge)."
 
+/usr/local/bin/nireekshana-link-plugin --remove 2>/dev/null || true
+rm -f /etc/pacman.d/hooks/nireekshana-opensnitch-plugin.hook /usr/local/bin/nireekshana-link-plugin
+rm -rf /usr/local/lib/nireekshana
+echo "Removed the prompt explainer."
+
 rm -f /etc/opensnitchd/rules/000-nireekshana-*.json /etc/opensnitchd/rules/001-nireekshana-*.json \
   /etc/opensnitchd/rules/002-nireekshana-*.json
 rm -rf /etc/opensnitchd/nireekshana
@@ -42,8 +47,8 @@ echo "Removed Bahya Nireekshana's OpenSnitch rules and lists (rules you made in 
 
 if [[ -n $user && $user != root ]]; then
   home=$(getent passwd "$user" | cut -d: -f6)
-  rm -f "$home/.config/autostart/opensnitch_ui.desktop"
-  echo "Removed the OpenSnitch login item."
+  rm -f "$home/.config/autostart/opensnitch_ui.desktop" "$home/.config/opensnitch/actions/nireekshana.json"
+  echo "Removed the OpenSnitch login item and the prompt explainer's switch."
 fi
 
 if (( purge )); then

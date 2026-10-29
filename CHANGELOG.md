@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.3.0 (2026-10-29)
+
+- Firewall prompts in plain words (Linux). When OpenSnitch asks about a connection, a coloured
+  line now says whether it looks routine, is worth a look, or needs care.
+- **Explain…** in the prompt opens the whole story:
+  - what the program is and what it's for
+  - who it's talking to
+  - why it's asking now: a scheduled job, a background service, something started from a terminal
+    or by another app
+  - what allowing or denying will do, and what happens if you don't answer
+  - any red flags
+- An **Advanced** tab shows the details behind the explanation: process tree, package, systemd
+  unit and timer, the script an interpreter runs, address type, port and checksum.
+- Opening the explanation stops the prompt's countdown.
+- The explanation is built only from what is on the computer. It makes no network requests. Run
+  `sudo omarchy/install.sh` again to add it.
+- The release pipeline uses the current GitHub Actions (checkout 7, setup-node 7, setup-java 6,
+  upload-artifact 7, download-artifact 8). Downloaded build artifacts are now checked against
+  their digest, and a mismatch fails the release.
+- Security problems can be reported privately from the repository's Security tab; see
+  SECURITY.md.
+
 ## 0.2.1 (2026-10-26)
 
 - The Windows app builds again with Visual Studio 2026. 0.2.0 was never published because of
