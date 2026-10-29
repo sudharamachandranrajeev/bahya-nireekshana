@@ -109,7 +109,7 @@ under the newest release, pick the file for your device:
 
 | Your device | File to download | Works on |
 | --- | --- | --- |
-| 🐧 Linux computer | `Nireekshana-<version>-linux-x64.tar.gz` | Ubuntu 22.04+, Fedora, Arch, Omarchy (Intel/AMD 64-bit) |
+| 🐧 Linux computer | `Nireekshana-<version>-linux-x64.tar.gz` | Ubuntu 22.04+, Fedora, Arch, Omarchy (64-bit x86) |
 | 🪟 Windows computer | `Nireekshana-<version>-windows-x64-setup.exe` | Windows 10 and 11 |
 | 🤖 Android phone | `Nireekshana-<version>-android.apk` | Android 7 and newer |
 | 🌐 Chrome or Edge | `Nireekshana-<version>-chrome.zip` | Chrome 116 and newer, Edge |
@@ -154,7 +154,7 @@ Prefer no installer? Download `…-windows-x64-portable.zip`, unzip it anywhere 
 
 1. Open the downloaded `.apk` on your phone.
 2. If Android asks, allow installs from your browser or file manager. This is normal for apps
-   from outside the Play Store.
+   from outside an app store.
 3. Tap **Install**, then **Open**.
 
 </details>
@@ -176,7 +176,7 @@ Prefer no installer? Download `…-windows-x64-portable.zip`, unzip it anywhere 
 3. If the popup asks for access to all sites, click **Allow access**. Without it nothing can be
    measured.
 
-The add-on isn't signed by Mozilla yet, so Firefox removes it when it restarts. Load it again after
+The add-on isn't signed yet, so Firefox removes it when it restarts. Load it again after
 each restart.
 
 </details>
@@ -334,7 +334,6 @@ extension/build.sh                             # Chrome and Firefox packages
   database
 - [vnstat](https://humdi.net/vnstat/), [nethogs](https://github.com/raboof/nethogs) and
   [OpenSnitch](https://github.com/evilsocket/opensnitch) on Linux
-- [Cloudflare's speed test](https://speed.cloudflare.com) endpoints
 - [file_picker](https://pub.dev/packages/file_picker), [url_launcher](https://pub.dev/packages/url_launcher),
   [package_info_plus](https://pub.dev/packages/package_info_plus) and [intl](https://pub.dev/packages/intl)
 - Fonts [Inter](https://rsms.me/inter/) and [Plus Jakarta Sans](https://github.com/tokotype/PlusJakartaSans),
