@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../domain/book.dart';
+import '../domain/status_bar.dart';
 import '../domain/update.dart';
 import '../ui/common.dart';
 import 'providers.dart';
@@ -15,6 +16,7 @@ class SettingsPage extends ConsumerWidget {
     title: 'Settings',
     children: [
       if (ref.watch(updaterProvider) case final updater?) _UpdateCard(updater),
+      if (StatusBarSpeed.supported) const _StatusBarCard(),
       const _AlertsCard(),
       const AppLockCard(),
       const HintsCard(),
@@ -71,6 +73,115 @@ class _AlertsCardState extends ConsumerState<_AlertsCard> {
             style: Theme.of(context).textTheme.bodySmall
                 ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Android: the live speed in the status bar, and what keeps it running.
+class _StatusBarCard extends StatefulWidget {
+  const _StatusBarCard();
+
+  @override
+  State<_StatusBarCard> createState() => _StatusBarCardState();
+}
+
+class _StatusBarCardState extends State<_StatusBarCard> with WidgetsBindingObserver {
+  static const _speed = StatusBarSpeed();
+  StatusBarFacts? _facts;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _refresh();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  // Back from the system settings or a permission prompt: read again.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _refresh();
+  }
+
+  Future<void> _refresh() async {
+    final facts = await _speed.status();
+    if (mounted) setState(() => _facts = facts);
+  }
+
+  Future<void> _toggle(bool on) async {
+    final facts = await _speed.setEnabled(on);
+    if (mounted) setState(() => _facts = facts);
+    // Turning it on asks for what it needs, one prompt at a time.
+    if (on && !facts.notifications) {
+      await _speed.askNotifications();
+    } else if (on && !facts.unrestricted) {
+      await _speed.askBattery();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final facts = _facts;
+    final muted = Theme.of(context).textTheme.bodySmall
+        ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant);
+    return SectionCard(
+      title: 'Status bar speed',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: const Text('Show live speed in the status bar'),
+            subtitle: const Text(
+              'Download speed as the status bar icon, download and upload in the notification. '
+              'Keeps running with the app closed; pauses while the screen is off.',
+            ),
+            value: facts?.enabled ?? false,
+            onChanged: facts == null ? null : _toggle,
+          ),
+          if (facts != null && facts.enabled) ...[
+            if (!facts.notifications)
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.notifications_off_outlined),
+                title: const Text('Notifications are off, so the speed is hidden'),
+                trailing: TextButton(onPressed: _speed.askNotifications, child: const Text('Allow')),
+              ),
+            if (!facts.unrestricted)
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.battery_alert_outlined),
+                title: const Text('Battery optimization may stop it'),
+                trailing: TextButton(onPressed: _speed.askBattery, child: const Text('Allow')),
+              )
+            else
+              const ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(Icons.battery_full_outlined),
+                title: Text('Battery optimization is off for this app'),
+              ),
+            Text(
+              'Motorola and some other phones have their own limits as well: in App info, set Battery to '
+              'Unrestricted and turn on Allow background usage. Don’t swipe the app away with “Clear all” '
+              'if your phone stops it then; lock it in recents instead.',
+              style: muted,
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: _speed.openAppInfo,
+                icon: const Icon(Icons.open_in_new, size: 18),
+                label: const Text('Open App info'),
+              ),
+            ),
+          ],
         ],
       ),
     );

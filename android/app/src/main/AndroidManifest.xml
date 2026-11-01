@@ -19,6 +19,18 @@
     <!-- The in-app updater hands a downloaded, checksum-checked APK to the
          system installer, which still asks the user. -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+    <!-- Status bar speed (SpeedService.kt): an ongoing notification from a
+         foreground service, started again at boot. specialUse because
+         dataSync is capped at 6 hours a day on Android 15. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- Asks once, from Settings, to be left out of battery optimization so
+         the status bar speed is not stopped. The app is not on Google Play. -->
+    <uses-permission
+        android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"
+        tools:ignore="BatteryLife"/>
     <!-- App lock: fingerprint, face or the device PIN (local_auth). -->
     <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
     <!-- usesCleartextTraffic: plain http is allowed only so a sync server on
@@ -68,6 +80,24 @@
             </intent-filter>
             <meta-data android:name="flutter_deeplinking_enabled" android:value="false"/>
         </activity>
+        <service
+            android:name=".SpeedService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Live download and upload speed in the status bar, turned on by the user"/>
+        </service>
+        <!-- System broadcasts only; BootReceiver.kt checks the action. -->
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+            </intent-filter>
+        </receiver>
         <!-- The installer needs a content: URI for the APK; a file: one is refused. -->
         <provider
             android:name="androidx.core.content.FileProvider"

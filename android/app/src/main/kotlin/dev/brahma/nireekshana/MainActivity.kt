@@ -1,5 +1,6 @@
 package dev.brahma.nireekshana
 
+import android.Manifest
 import android.app.KeyguardManager
 import android.app.admin.DevicePolicyManager
 import android.content.Context
@@ -8,7 +9,10 @@ import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.os.PowerManager
 import android.provider.Settings
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.FileProvider
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -21,7 +25,8 @@ import java.util.concurrent.Executors
  * them when it scans a pairing QR code. Also tells Dart the device's name
  * for the pairing request, what Sentinel asks about the device, the network
  * counters and statistics (NetStats.kt), and hands an update's APK to the
- * system's installer (lib/domain/update.dart). A fragment activity, which
+ * system's installer (lib/domain/update.dart), and turns the status bar
+ * speed (SpeedService.kt, lib/domain/status_bar.dart) on and off. A fragment activity, which
  * local_auth needs for the app lock's fingerprint and face prompt.
  */
 class MainActivity : FlutterFragmentActivity() {
@@ -87,6 +92,46 @@ class MainActivity : FlutterFragmentActivity() {
                     result.error("install_failed", error.message, null)
                 }
             }
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "dev.brahma.nireekshana/statusbar")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "status" -> result.success(statusBarFacts())
+                    "setEnabled" -> {
+                        val on = call.argument<Boolean>("on") ?: false
+                        SpeedService.setEnabled(this, on)
+                        result.success(statusBarFacts())
+                    }
+                    "askNotifications" -> {
+                        val manager = NotificationManagerCompat.from(this)
+                        if (Build.VERSION.SDK_INT >= 33 && !manager.areNotificationsEnabled() &&
+                            !asked(Manifest.permission.POST_NOTIFICATIONS)
+                        ) {
+                            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 41)
+                        } else {
+                            // Asked before or turned off by hand: only the settings can change it.
+                            openSettings(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                        }
+                        result.success(null)
+                    }
+                    "askBattery" -> {
+                        // The system's own "Let app always run in background?" dialog.
+                        try {
+                            startActivity(
+                                Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+                                    .setData(Uri.fromParts("package", packageName, null))
+                            )
+                        } catch (e: Exception) {
+                            openSettings(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                        }
+                        result.success(null)
+                    }
+                    "openAppInfo" -> {
+                        openSettings(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        result.success(null)
+                    }
+                    else -> result.notImplemented()
+                }
+            }
         channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "dev.brahma.nireekshana/links").apply {
             setMethodCallHandler { call, result ->
                 when (call.method) {
@@ -98,6 +143,51 @@ class MainActivity : FlutterFragmentActivity() {
                     else -> result.notImplemented()
                 }
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Back after a force stop or a refused background start.
+        SpeedService.start(this)
+    }
+
+    /** Whether the status bar speed is on and what could stop it. */
+    private fun statusBarFacts(): Map<String, Any> {
+        val power = getSystemService(Context.POWER_SERVICE) as PowerManager
+        return mapOf(
+            "enabled" to SpeedService.isEnabled(this),
+            "notifications" to NotificationManagerCompat.from(this).areNotificationsEnabled(),
+            "unrestricted" to power.isIgnoringBatteryOptimizations(packageName),
+        )
+    }
+
+    private val askedPrefs by lazy { getSharedPreferences("asked", Context.MODE_PRIVATE) }
+
+    /** True when [permission] was asked for before; marks it asked. */
+    private fun asked(permission: String): Boolean {
+        val before = askedPrefs.getBoolean(permission, false)
+        askedPrefs.edit().putBoolean(permission, true).apply()
+        // Android shows the prompt twice at most; after a "no" with no
+        // rationale left, only the settings can change it.
+        return before && !ActivityCompat.shouldShowRequestPermissionRationale(this, permission)
+    }
+
+    /** This app's page of [action], or the app info page when that fails. */
+    private fun openSettings(action: String) {
+        val intent = Intent(action).apply {
+            if (action == Settings.ACTION_APP_NOTIFICATION_SETTINGS) {
+                putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+            } else if (action == Settings.ACTION_APPLICATION_DETAILS_SETTINGS) {
+                data = Uri.fromParts("package", packageName, null)
+            }
+        }
+        try {
+            startActivity(intent)
+        } catch (e: Exception) {
+            startActivity(
+                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.fromParts("package", packageName, null))
+            )
         }
     }
 
