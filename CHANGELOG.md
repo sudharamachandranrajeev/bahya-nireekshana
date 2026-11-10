@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1 (2026-11-10)
+
+- Windows: the installer always uses its own folder. Other Brahma apps used to share its installer id, so an older install could sit in another app's folder; install this version to put it back in its own. Your data is not touched.
+
 ## 0.3.0 (2026-10-29)
 
 - Firewall prompts in plain words (Linux). When OpenSnitch asks about a connection, a coloured
