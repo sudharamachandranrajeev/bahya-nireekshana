@@ -9,7 +9,7 @@ const nireekshanaIdentity = AppIdentity(
   id: 'nireekshana',
   name: 'Bahya Nireekshana',
   androidPackage: 'dev.brahma.nireekshana',
-  releases: 'sudharamachandranrajeev/bahya-nireekshana',
+  releases: 'sudharamachandranrajeev/bahya-nireekshana-network-monitor',
 );
 
 /// Everything a running app needs: keys, the encrypted database and the

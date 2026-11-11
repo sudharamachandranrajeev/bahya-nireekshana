@@ -61,7 +61,7 @@ your provider's meter exactly.
 ## Install
 
 Download the zips from the
-[latest release](https://github.com/sudharamachandranrajeev/bahya-nireekshana/releases).
+[latest release](https://github.com/sudharamachandranrajeev/bahya-nireekshana-network-monitor/releases).
 
 **Chrome or Edge**
 

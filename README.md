@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <a href="https://github.com/sudharamachandranrajeev/bahya-nireekshana"><img src="branding/nireekshana-512.png" alt="Bahya Nireekshana" width="140"></a>
+  <a href="https://github.com/sudharamachandranrajeev/bahya-nireekshana-network-monitor"><img src="branding/nireekshana-512.png" alt="Bahya Nireekshana" width="140"></a>
   <br>
   Bahya Nireekshana
   <br>
@@ -9,10 +9,10 @@
 <h4 align="center">See how much internet data each device, app and website uses, and stay inside your data plan.</h4>
 
 <p align="center">
-  <a href="https://github.com/sudharamachandranrajeev/bahya-nireekshana/releases"><img src="https://img.shields.io/github/v/release/sudharamachandranrajeev/bahya-nireekshana?include_prereleases&color=2fa3b4&label=download" alt="Latest release"></a>
+  <a href="https://github.com/sudharamachandranrajeev/bahya-nireekshana-network-monitor/releases"><img src="https://img.shields.io/github/v/release/sudharamachandranrajeev/bahya-nireekshana-network-monitor?include_prereleases&color=2fa3b4&label=download" alt="Latest release"></a>
   <img src="https://img.shields.io/badge/works%20on-Linux%20%7C%20Windows%20%7C%20Android%20%7C%20Chrome%20%7C%20Firefox-555" alt="Works on Linux, Windows, Android, Chrome and Firefox">
   <img src="https://img.shields.io/badge/your%20data-encrypted-2e7d32" alt="Your data is encrypted">
-  <a href="https://github.com/sudharamachandranrajeev/brahma"><img src="https://img.shields.io/badge/part%20of-Brahma-8a5cf6" alt="Part of Brahma"></a>
+  <a href="https://github.com/sudharamachandranrajeev/brahma-life-suite"><img src="https://img.shields.io/badge/part%20of-Brahma-8a5cf6" alt="Part of Brahma"></a>
 </p>
 
 <p align="center">
@@ -115,7 +115,7 @@ works day to day, but some pages are Linux-only (see below).
 
 ### Step 1 – Download
 
-Open the [releases page](https://github.com/sudharamachandranrajeev/bahya-nireekshana/releases) and,
+Open the [releases page](https://github.com/sudharamachandranrajeev/bahya-nireekshana-network-monitor/releases) and,
 under the newest release, pick the file for your device:
 
 | Your device | File to download | Works on |
@@ -206,7 +206,7 @@ There is no set-up screen. The **Now** page opens and starts counting at once.
 ### Step 4 (optional) – Use it on more than one device
 
 1. Set up a free sync server, at home or on Cloudflare. The
-   [Brahma sync server guide](https://github.com/sudharamachandranrajeev/brahma/tree/main/server)
+   [Brahma sync server guide](https://github.com/sudharamachandranrajeev/brahma-life-suite/tree/main/server)
    walks you through it.
 2. In the app, open **Settings → Sync → Set up sync** and follow the steps.
 3. **Write down the recovery key** it shows and keep it somewhere safe, away from the device.
@@ -325,7 +325,7 @@ keeps 400 days of history in its own storage; clear it from the extension's dash
 You need [Git](https://git-scm.com) and [Flutter](https://flutter.dev) 3.47.
 
 ```bash
-git clone https://github.com/sudharamachandranrajeev/bahya-nireekshana
+git clone https://github.com/sudharamachandranrajeev/bahya-nireekshana-network-monitor
 cd bahya-nireekshana
 flutter pub get
 dart run build_runner build -d                 # generate the database code
@@ -339,7 +339,7 @@ node --test 'extension/tests/*.test.mjs'       # the browser extension
 extension/build.sh                             # Chrome and Firefox packages
 ```
 
-- `brahma_core` comes from the [brahma](https://github.com/sudharamachandranrajeev/brahma)
+- `brahma_core` comes from the [brahma](https://github.com/sudharamachandranrajeev/brahma-life-suite)
   repository. To work on it locally, add a gitignored `pubspec_overrides.yaml` pointing at
   `../brahma/core`.
 - `scripts/install-linux.sh` installs a local build into your app menu.
@@ -373,12 +373,12 @@ Bahya Nireekshana is one app in the **Brahma** family. They share one sign-in an
 
 | App | What it does |
 | --- | --- |
-| [brahma](https://github.com/sudharamachandranrajeev/brahma) | The shared core and the all-in-one app |
-| [artha](https://github.com/sudharamachandranrajeev/artha) | Money: accounts, spending, bills and investments |
-| [vidya](https://github.com/sudharamachandranrajeev/vidya) | Learning, flashcards and focus |
-| [udyoga](https://github.com/sudharamachandranrajeev/udyoga) | Career and job hunting |
-| [graha-anveshana](https://github.com/sudharamachandranrajeev/graha-anveshana) | Find a home to rent or buy |
-| [vahana-anveshana](https://github.com/sudharamachandranrajeev/vahana-anveshana) | Find a car |
+| [brahma](https://github.com/sudharamachandranrajeev/brahma-life-suite) | The shared core and the all-in-one app |
+| [artha](https://github.com/sudharamachandranrajeev/artha-personal-finance) | Money: accounts, spending, bills and investments |
+| [vidya](https://github.com/sudharamachandranrajeev/vidya-learning-manager) | Learning, flashcards and focus |
+| [udyoga](https://github.com/sudharamachandranrajeev/udyoga-career-manager) | Career and job hunting |
+| [graha-anveshana](https://github.com/sudharamachandranrajeev/graha-anveshana-property-search) | Find a home to rent or buy |
+| [vahana-anveshana](https://github.com/sudharamachandranrajeev/vahana-anveshana-car-manager) | Find a car |
 
 ## License
 
