@@ -17,12 +17,12 @@ purge=0
 
 systemctl disable --now nireekshana-rules-export.path nireekshana-rules-export.service 2>/dev/null || true
 rm -f /etc/systemd/system/nireekshana-rules-export.service /etc/systemd/system/nireekshana-rules-export.path \
-  /usr/local/bin/nireekshana-rules /usr/share/polkit-1/actions/local.rajeevrama.nireekshana.rules.policy
+  /usr/local/bin/nireekshana-rules /usr/share/polkit-1/actions/local.*.nireekshana.rules.policy
 rm -rf /run/nireekshana
 # Leftovers from when this was called netwatch.
 systemctl disable --now netwatch-rules-export.path netwatch-rules-export.service 2>/dev/null || true
 rm -f /etc/systemd/system/netwatch-rules-export.service /etc/systemd/system/netwatch-rules-export.path \
-  /usr/local/bin/netwatch-rules /usr/share/polkit-1/actions/local.rajeevrama.netwatch.rules.policy
+  /usr/local/bin/netwatch-rules /usr/share/polkit-1/actions/local.*.netwatch.rules.policy
 rm -rf /run/netwatch
 systemctl daemon-reload
 echo "Removed the widget's rules manager."

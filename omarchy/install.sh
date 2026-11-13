@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# System side of Bahya Nireekshana's bar widget (rajeevrama.nireekshana):
+# System side of Bahya Nireekshana's bar widget (brahma.nireekshana):
 #
 #   vnstat      per-connection traffic history (day / week / month)
 #   OpenSnitch  per-app firewall: asks before an unknown app connects, keeps
@@ -15,7 +15,7 @@
 #   /etc/opensnitchd/nireekshana/                         blocklist / allowlist files
 #   /etc/opensnitchd/rules/00[0-2]-nireekshana-*.json     rules that use them
 #   /usr/local/bin/nireekshana-rules                      lets the widget list and change rules
-#   /usr/share/polkit-1/actions/local.rajeevrama.nireekshana.rules.policy
+#   /usr/share/polkit-1/actions/local.brahma.nireekshana.rules.policy
 #   /etc/systemd/system/nireekshana-rules-export.{service,path}
 #   /usr/local/bin/nireekshana-apps, /etc/systemd/system/nireekshana-apps.service
 #   /var/lib/nireekshana/apps.json                       daily usage per app
@@ -36,7 +36,7 @@ LISTS=/etc/opensnitchd/nireekshana
 RULES=/etc/opensnitchd/rules
 OLD_LISTS=/etc/opensnitchd/netwatch
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-POLICY=/usr/share/polkit-1/actions/local.rajeevrama.nireekshana.rules.policy
+POLICY=/usr/share/polkit-1/actions/local.brahma.nireekshana.rules.policy
 EXPLAINER=/usr/local/lib/nireekshana/opensnitch/nireekshana
 HOOK=/etc/pacman.d/hooks/nireekshana-opensnitch-plugin.hook
 
@@ -245,10 +245,14 @@ if [[ -e /etc/systemd/system/netwatch-rules-export.path ]]; then
   systemctl disable --now netwatch-rules-export.path netwatch-rules-export.service 2>/dev/null || true
   rm -f /etc/systemd/system/netwatch-rules-export.service /etc/systemd/system/netwatch-rules-export.path
 fi
-rm -f /usr/local/bin/netwatch-rules /usr/share/polkit-1/actions/local.rajeevrama.netwatch.rules.policy
+rm -f /usr/local/bin/netwatch-rules
+# Earlier names of the polkit policy (the action id changed twice).
+for old in /usr/share/polkit-1/actions/local.*.netwatch.rules.policy /usr/share/polkit-1/actions/local.*.nireekshana.rules.policy; do
+  [[ -e $old && $old != "$POLICY" ]] && rm -f "$old"
+done
 rm -rf /run/netwatch
 install -m 755 "$HERE/bin/nireekshana-rules" /usr/local/bin/nireekshana-rules
-install -m 644 "$HERE/polkit/local.rajeevrama.nireekshana.rules.policy" "$POLICY"
+install -m 644 "$HERE/polkit/local.brahma.nireekshana.rules.policy" "$POLICY"
 install -m 644 "$HERE/systemd/nireekshana-rules-export.service" "$HERE/systemd/nireekshana-rules-export.path" /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable --now nireekshana-rules-export.path

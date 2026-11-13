@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "rajeevrama.nireekshana",
+  "id": "brahma.nireekshana",
   "name": "Bahya Nireekshana",
   "version": "1.0.0",
-  "author": "rajeevrama",
+  "author": "Brahma",
   "description": "Live upload/download speed in the bar, with a panel of daily, weekly and monthly usage per connection (vnstat), live per-app usage (nethogs), and OpenSnitch firewall status, blocklists and allowlist",
   "kinds": [
     "bar-widget"

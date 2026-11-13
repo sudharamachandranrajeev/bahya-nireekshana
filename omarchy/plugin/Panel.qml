@@ -16,8 +16,8 @@ import "Model.js" as Model
 // terminal for sudo.
 Panel {
   id: root
-  moduleName: "rajeevrama.nireekshana"
-  ipcTarget: "rajeevrama.nireekshana"
+  moduleName: "brahma.nireekshana"
+  ipcTarget: "brahma.nireekshana"
 
   readonly property string home: Quickshell.env("HOME")
   readonly property string installScript: home + "/Work/bahya-nireekshana/omarchy/install.sh"

@@ -6,7 +6,7 @@ older netwatch setup over to the new names and keeps your lists.)
 
 | Need | Provided by |
 |------|-------------|
-| Live upload/download speed in the bar | `rajeevrama.nireekshana` widget (reads `/proc/net/dev`, no privileges) |
+| Live upload/download speed in the bar | `brahma.nireekshana` widget (reads `/proc/net/dev`, no privileges) |
 | Daily / weekly / monthly usage per connection | vnstat (`vnstat.service`), shown in the widget panel |
 | Live usage per app (GUI apps, scripts, CLI tools, system services) | nethogs, opened from the widget in a terminal (`sudo nethogs -C`) |
 | Daily usage per app, for the app's Apps page | `nireekshana-apps.service`: reads nethogs in trace mode and writes `/var/lib/nireekshana/apps.json` |
@@ -28,7 +28,7 @@ omarchy/install.sh --check       # status only
 ```
 
 `install-plugin.sh` copies `plugin/` to
-`~/.config/omarchy/plugins/rajeevrama.nireekshana` and puts the widget in the
+`~/.config/omarchy/plugins/brahma.nireekshana` and puts the widget in the
 bar after the network icon (an old netwatch widget is replaced in place). Until the setup script has
 run, its panel offers a **Set up** button that opens this script in a terminal.
 
@@ -45,7 +45,7 @@ run, its panel offers a **Set up** button that opens this script in a terminal.
   - firewall status
   - **Allowed & blocked**: every saved OpenSnitch answer and list entry (see below)
   - shortcuts to live per-app usage and the OpenSnitch window
-- **Settings** (`~/.config/omarchy/shell.json`, `rajeevrama.nireekshana` entry):
+- **Settings** (`~/.config/omarchy/shell.json`, `brahma.nireekshana` entry):
   - `label`: `active`, `always` or `none`
   - `interfaces`: e.g. `"wlan0,enp3s0"`; empty means Wi‑Fi, Ethernet and mobile links. VPN tunnels are left out so traffic isn't counted twice.
   - `firewallBadge`
@@ -156,7 +156,7 @@ answered any prompts.
 - `install-plugin.sh`: the bar widget (`plugin/`) for your user
 - `install.sh` / `uninstall.sh` (`--purge` also removes the packages and vnstat history)
 - `bin/nireekshana-rules`: the root helper behind the Allowed & blocked page (installed to `/usr/local/bin`)
-- `systemd/nireekshana-rules-export.{service,path}`, `polkit/local.rajeevrama.nireekshana.rules.policy`
+- `systemd/nireekshana-rules-export.{service,path}`, `polkit/local.brahma.nireekshana.rules.policy`
 - `opensnitch/nireekshana/`: the prompt explainer (`nireekshana.py` is the plugin, `explain.py`
   the logic, `known.json` the list of programs, sites and ports), with `bin/nireekshana-link-plugin`
   and `pacman/nireekshana-opensnitch-plugin.hook`
